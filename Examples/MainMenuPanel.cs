@@ -1,6 +1,4 @@
 using System;
-using THEBADDEST.Tweening;
-using UnityEngine;
 
 
 namespace THEBADDEST.UI
@@ -18,6 +16,7 @@ namespace THEBADDEST.UI
 			var toComplete = new TransitionBase(nameof(CompletePanel));
 			SetTransitions(toComplete);
 			SetupButtons();
+			
 		}
 
 		void SetupButtons()

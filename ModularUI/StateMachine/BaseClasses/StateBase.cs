@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 
 namespace THEBADDEST
@@ -9,12 +10,13 @@ namespace THEBADDEST
 	/// <summary>
 	/// Abstract base class for implementing states in a state machine.
 	/// </summary>
-	public abstract class StateBase : IState
+	public abstract class StateBase :MonoBehaviour, IState
 	{
 
-		public  string            StateName    { get; }
-		public  IStateMachine     StateMachine { get; protected set; }
-		private List<ITransition> cachedTransitions = new List<ITransition>();
+		public virtual string        StateName    { get; protected set; }
+		public         IStateMachine StateMachine { get; protected set; }
+		// Dictionary to cache the transitions associated with the panel
+		private Dictionary<string, ITransition> cachedTransitions = new Dictionary<string, ITransition>();
 
 		/// <summary>
 		/// Initializes the state with the given state machine.
@@ -34,9 +36,8 @@ namespace THEBADDEST
 			foreach (var transition in transitions)
 			{
 				StateMachine.LoadState(transition.toState, null);
+				cachedTransitions.Add(transition.toState, transition);
 			}
-
-			this.cachedTransitions = transitions.ToList();
 		}
 
 		/// <summary>
@@ -45,7 +46,7 @@ namespace THEBADDEST
 		/// <returns>An array of transitions.</returns>
 		public ITransition[] GetTransitions()
 		{
-			return cachedTransitions.ToArray();
+			return cachedTransitions.Values.ToArray();
 		}
 
 		/// <summary>
@@ -55,8 +56,10 @@ namespace THEBADDEST
 		/// <param name="value">The condition value to set.</param>
 		public void SetTransitionCondition(string stateName, bool value)
 		{
-			var trans                          = cachedTransitions.FirstOrDefault(x => x.toState == stateName);
-			if (trans != null) trans.condition = value;
+			if (cachedTransitions.TryGetValue(stateName, out ITransition transition))
+			{
+				transition.condition = value;
+			}
 		}
 
 		/// <summary>
@@ -64,22 +67,35 @@ namespace THEBADDEST
 		/// </summary>
 		public virtual void Execute()
 		{
-			var executableTransition = cachedTransitions.FirstOrDefault(x => x.condition);
-			if (executableTransition != null)
+			foreach (var transition in cachedTransitions.Values)
 			{
-				StateMachine.Transition(executableTransition);
+				if (transition.Decision())
+				{
+					StateMachine.Transition(transition);
+					break;
+				}
 			}
 		}
 
 		/// <summary>
 		/// Called when entering the state.
 		/// </summary>
-		public abstract void Enter();
+		public virtual void Enter()
+		{
+			gameObject.SetActive(true);
+		}
 
 		/// <summary>
 		/// Called when exiting the state.
 		/// </summary>
-		public abstract void Exit();
+		public virtual void Exit()
+		{
+			gameObject.SetActive(false);
+			foreach (var transition in cachedTransitions.Values)
+			{
+				transition.condition = false;
+			}
+		}
 
 	}
 

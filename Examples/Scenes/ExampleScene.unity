@@ -2232,7 +2232,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6408209597063564386
 Transform:
   m_ObjectHideFlags: 0
@@ -2399,6 +2399,7 @@ GameObject:
   - component: {fileID: 6408209597509420960}
   - component: {fileID: 6408209597509420961}
   - component: {fileID: 6408209597509420976}
+  - component: {fileID: 6408209597509420977}
   m_Layer: 5
   m_Name: UICamera
   m_TagString: Untagged
@@ -2450,6 +2451,20 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &6408209597509420977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6408209597509420975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 226a26a549f24c1ab024d5b655c95923, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  overlayCamera: {fileID: 6408209597509420961}
+  mainCamera: {fileID: 0}
 --- !u!114 &6408209597716673314
 MonoBehaviour:
   m_ObjectHideFlags: 0

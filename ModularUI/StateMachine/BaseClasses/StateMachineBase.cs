@@ -87,6 +87,11 @@ namespace THEBADDEST
 			StartCoroutine(TransitionTo(transition));
 		}
 
+		/// <summary>
+		/// Initiates a transition to a new state based on a transition object using a coroutine.
+		/// </summary>
+		/// <param name="transition">The transition object specifying the target state.</param>
+		/// <returns>An IEnumerator which can be used in a coroutine to transition to the target state.</returns>
 		private IEnumerator TransitionTo(ITransition transition)
 		{
 			if (transition.transitTime > 0)
@@ -144,7 +149,7 @@ namespace THEBADDEST
 			{
 				currentAnyState.Execute();
 			}
-			else
+			else if (currentState != null)
 			{
 				currentStateName = currentState.StateName;
 				currentState?.Execute();
@@ -163,6 +168,19 @@ namespace THEBADDEST
 				previousState = currentState;
 				currentState  = null;
 			}
+		}
+
+		public void ClearStates()
+		{
+			while (anyStates.Count>0)
+			{
+				anyStates.Pop().Exit();
+			}
+			foreach (var state in cachedStates.Values)
+			{
+				state.Exit();
+			}
+			cachedStates.Clear();
 		}
 
 	}

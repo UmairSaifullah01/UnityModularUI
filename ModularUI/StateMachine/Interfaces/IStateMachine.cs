@@ -56,5 +56,9 @@ namespace THEBADDEST
 		/// </summary>
 		/// <param name="state">The state to exit.</param>
 		void Exit(IState state);
+		/// <summary>
+		/// Removes all the states from the state machine.
+		/// </summary>
+		void ClearStates();
 	}
 }
