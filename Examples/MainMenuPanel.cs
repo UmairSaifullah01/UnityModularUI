@@ -8,20 +8,22 @@ namespace THEBADDEST.UI
 	public class MainMenuPanel : UIPanel
 	{
 
-		public override string StateName { get; protected set; } = nameof(MainMenuPanel);
+		public override string StateName => nameof(MainMenuPanel);
 
 		public override void Init(IStateMachine stateMachine)
 		{
 			base.Init(stateMachine);
-			var toComplete = new TransitionBase(nameof(CompletePanel));
-			SetTransitions(toComplete);
 			SetupButtons();
-			
 		}
 
 		void SetupButtons()
 		{
-			Binder("Play", (Action) (() => SetTransitionCondition(nameof(CompletePanel), true)));
+			Binder("Play", new Action(ToComplete));
+		}
+
+		void ToComplete()
+		{
+			ServiceLocator.Global.GetService<GameFlow>().RunTransition(GameTransitionType.Complete);
 		}
 
 		public override void Enter()

@@ -10,26 +10,34 @@ namespace THEBADDEST.UI
 	public class CompletePanel : UIPanel
 	{
 
-		public override string StateName { get; protected set; } = nameof(CompletePanel);
-
+		public override string StateName => nameof(CompletePanel);
+		GameFlow               gameFlow => ServiceLocator.Global.GetService<GameFlow>();
 		public override void Init(IStateMachine stateMachine)
 		{
 			base.Init(stateMachine);
-			var toMenu = new TransitionBase(nameof(MainMenuPanel));
-			SetTransitions(toMenu);
 			SetupButtons();
 		}
 
 		void SetupButtons()
 		{
-			Binder("Next", (Action) (() => SetTransitionCondition(nameof(MainMenuPanel), true)));
+			Binder("Next", new Action(ToMainMenu));
 		}
-
+		void ToMainMenu()
+		{
+			gameFlow.RunTransition(GameTransitionType.MainMenu);
+		}
 		public override void Enter()
 		{
+			transform.localScale = Vector3.zero;
 			base.Enter();
 			Tweener tweener = new CorotineTweener();
 			tweener.Scale(transform,Vector3.zero, Vector3.one, 0.5f).SetEase(TweenerEasing.Ease.EaseInBounce);
+		}
+
+		public override void Exit()
+		{
+			Tweener tweener = new CorotineTweener();
+			tweener.Scale(transform,Vector3.one, Vector3.zero, 0.5f).SetEase(TweenerEasing.Ease.EaseInBounce);
 		}
 
 		void DoOtherAnimation()

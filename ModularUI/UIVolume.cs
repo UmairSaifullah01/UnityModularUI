@@ -26,14 +26,10 @@ namespace THEBADDEST.UI
 			{
 				cachedStates.Add(state.GetStateName(), state);
 			}
-
 			foreach (var state in cachedStates.Values)
 			{
-				if (currentState == null) currentState = state;
 				state.Init(this);
 			}
-
-			LoadState(currentState.StateName, Entry);
 		}
 
 		/// <summary>

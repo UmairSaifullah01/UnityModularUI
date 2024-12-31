@@ -1,14 +1,14 @@
 ﻿using System.Collections;
-
+using UnityEngine;
 
 
 namespace THEBADDEST
 {
 
-	
 
 	public class TransitionBase : ITransition
 	{
+
 		/// <summary>
 		/// The ID of the state to transition to.
 		/// </summary>
@@ -18,6 +18,18 @@ namespace THEBADDEST
 		/// The duration of the transition in seconds.
 		/// </summary>
 		public float transitTime { get; }
+
+		public IEnumerator Execute()
+		{
+			if (transitTime > 0)
+				yield return new WaitForSecondsRealtime(transitTime);
+			yield break;
+		}
+
+		public void Run()
+		{
+			condition=true;
+		}
 
 		/// <summary>
 		/// The condition that determines if the transition should be taken.
@@ -35,16 +47,8 @@ namespace THEBADDEST
 			this.transitTime = exitTime;
 		}
 
-		/// <summary>
-		/// Evaluates the condition of the transition.
-		/// </summary>
-		/// <returns>True if the condition is met, otherwise false.</returns>
-		public virtual bool Decision()
-		{
-			return condition;
-		}
-	}
 
+	}
 
 
 }

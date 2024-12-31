@@ -1,4 +1,7 @@
-﻿namespace THEBADDEST
+﻿using System.Collections;
+
+
+namespace THEBADDEST
 {
 
 
@@ -6,10 +9,10 @@
 	{
 
 		string toState     { get; }
-		float  transitTime { get; }
-		bool   condition   { get; set; }
+		
+		IEnumerator Execute();
 
-		bool Decision();
+		void Run();
 
 	}
 

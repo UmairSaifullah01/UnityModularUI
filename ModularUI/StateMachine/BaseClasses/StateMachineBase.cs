@@ -94,16 +94,11 @@ namespace THEBADDEST
 		/// <returns>An IEnumerator which can be used in a coroutine to transition to the target state.</returns>
 		private IEnumerator TransitionTo(ITransition transition)
 		{
-			if (transition.transitTime > 0)
-				yield return new WaitForSecondsRealtime(transition.transitTime);
-			MoveToState(GetState(transition.toState));
-		}
-
-		private void MoveToState(IState state)
-		{
 			currentState?.Exit();
 			previousState = currentState;
-			currentState  = state;
+			currentState  = null;
+			yield return transition.Execute();
+			currentState  = GetState(transition.toState);
 			currentState?.Enter();
 			isTransiting = false;
 		}
