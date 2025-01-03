@@ -15,7 +15,6 @@
 		public static string GetStateName(this IState state)
 		{
 			return state.StateName;
-			return state.GetType().Name;
 		}
 	}
 

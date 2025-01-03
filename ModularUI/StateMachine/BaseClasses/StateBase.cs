@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 
 namespace THEBADDEST
@@ -10,7 +11,6 @@ namespace THEBADDEST
 	/// </summary>
 	public abstract class StateBase :MonoBehaviour, IState
 	{
-
 		public virtual string        StateName    { get; protected set; }
 		public         IStateMachine StateMachine { get; protected set; }
 		/// <summary>
@@ -21,9 +21,6 @@ namespace THEBADDEST
 		{
 			this.StateMachine = stateMachine;
 		}
-
-
-		
 
 		/// <summary>
 		/// Executes the state. Checks for executable transitions based on conditions and triggers state transitions.
@@ -36,17 +33,19 @@ namespace THEBADDEST
 		/// <summary>
 		/// Called when entering the state.
 		/// </summary>
-		public virtual void Enter()
+		public virtual IEnumerator Enter()
 		{
 			gameObject.SetActive(true);
+			yield break;
 		}
 
 		/// <summary>
 		/// Called when exiting the state.
 		/// </summary>
-		public virtual void Exit()
+		public virtual IEnumerator Exit()
 		{
 			gameObject.SetActive(false);
+			yield break;
 		}
 
 	}

@@ -12,7 +12,9 @@ namespace THEBADDEST
 		/// <summary>
 		/// The ID of the state to transition to.
 		/// </summary>
-		public string toState { get; }
+		public string ToState { get; }
+		public bool IsAnyState  { get; }
+		public bool ClearStates { get; }
 
 		/// <summary>
 		/// The duration of the transition in seconds.
@@ -41,10 +43,12 @@ namespace THEBADDEST
 		/// </summary>
 		/// <param name="to">The ID of the state to transition to.</param>
 		/// <param name="exitTime">The duration of the transition in seconds.</param>
-		public TransitionBase(string to, float exitTime = 0)
+		public TransitionBase(string to, float exitTime = 0, bool isAnyState = false,bool clearStates = false)
 		{
-			this.toState     = to;
+			this.ToState     = to;
 			this.transitTime = exitTime;
+			this.IsAnyState  = isAnyState;
+			this.ClearStates = clearStates; 
 		}
 
 

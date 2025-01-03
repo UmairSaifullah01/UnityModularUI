@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9aaaa7a28fc4d3e917b9a6aeebd5075, type: 3}
-  m_Name: BootStateTransition 1
+  m_Script: {fileID: 11500000, guid: b65b383745954c42b5b3767e90cdf029, type: 3}
+  m_Name: UIInitializer
   m_EditorClassIdentifier: 
-  targetState: CompletePanel
-  transitTime: 0
+  uiVolume: {fileID: 5145506631470168030, guid: 3f874fefd315c4c228dcf023500784d6, type: 3}
+  bootTransition: {fileID: 11400000, guid: e7e625ba38b2b4a9a8ba11083fc5cd93, type: 2}

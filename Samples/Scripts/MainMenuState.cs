@@ -1,14 +1,14 @@
-using System;
+using System.Collections;
 
 
 namespace THEBADDEST.UI
 {
 
 
-	public class MainMenuPanel : UIPanel
+	public class MainMenuState : UIPanel
 	{
 
-		public override string StateName => nameof(MainMenuPanel);
+		public override string StateName => nameof(MainMenuState);
 
 		public override void Init(IStateMachine stateMachine)
 		{
@@ -18,17 +18,18 @@ namespace THEBADDEST.UI
 
 		void SetupButtons()
 		{
-			Binder("Play", new Action(ToComplete));
+			EventBinder("Play", ToComplete);
 		}
 
 		void ToComplete()
 		{
-			ServiceLocator.Global.GetService<GameFlow>().RunTransition(GameTransitionType.Complete);
+			ITransition transition = transitions[nameof(CompleteGameState)];
+			StateMachine.Transition(transition);
 		}
 
-		public override void Enter()
+		public override IEnumerator Enter()
 		{
-			base.Enter();
+			yield return base.Enter();
 			Animation();
 		}
 

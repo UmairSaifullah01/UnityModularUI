@@ -1,4 +1,7 @@
-﻿namespace THEBADDEST
+﻿using System.Collections;
+
+
+namespace THEBADDEST
 {
 
 
@@ -31,12 +34,12 @@
 		/// <summary>
 		/// Actions to be performed when entering the state.
 		/// </summary>
-		void Enter();
+		IEnumerator Enter();
 
 		/// <summary>
 		/// Actions to be performed when exiting the state.
 		/// </summary>
-		void Exit();
+		IEnumerator Exit();
 	}
 
 

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using THEBADDEST.MVVM;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 
 namespace THEBADDEST.UI
@@ -15,18 +17,24 @@ namespace THEBADDEST.UI
 	public abstract class UIPanel : StateBase, IViewModel
 	{
 
+		[SerializeField]private InterfaceReference<ITransition>[] gameTransitions;
 		// Event triggered when the model data needs to be bound to the view
-		public event Action<string, IModel<object>> ModelBinder;
-		
+		public event Action<string, IModel<object>> ModelBinder
+		{
+			add => viewModel.ModelBinder    += value;
+			remove => viewModel.ModelBinder -= value;
+		}
 		// Dictionary to store the views associated with the panel
-		public Dictionary<string, IView> views { get; set; }
+		public Dictionary<string, IView>            views
+		{
+			get => viewModel.views;
+			set => viewModel.views = value;
+		}
 		
-		
-		// Reference to the panel's model
-		private ModelBase model;
-		
-		
-		
+		protected ViewModelBase        viewModel;
+
+		protected Dictionary<string, ITransition> transitions;
+
 		/**
          * Initializes the panel with the specified state machine.
          * It also initializes the view model and sets the panel's model to null.
@@ -34,9 +42,14 @@ namespace THEBADDEST.UI
          */
 		public override void Init(IStateMachine stateMachine)
 		{
+			transitions = new Dictionary<string, ITransition>();
+			foreach (var transition in gameTransitions)
+			{
+				if (!transitions.ContainsKey(transition.Reference.ToState))
+					transitions.Add(transition.Reference.ToState, transition.Reference);
+			}
 			base.Init(stateMachine);;
 			InitViewModel();
-			model = new ModelBase(null);
 			gameObject.SetActive(false);
 		}
 		
@@ -46,20 +59,8 @@ namespace THEBADDEST.UI
          */
 		public virtual void InitViewModel()
 		{
-			if (views == null)
-			{
-				var v = GetComponentsInChildren<IView>(true);
-				views = new Dictionary<string, IView>();
-				foreach (IView view in v)
-				{
-					views.Add(view.Id, view);
-				}
-			}
-
-			foreach (var view in views.Values)
-			{
-				view.Init(this);
-			}
+			viewModel = new ViewModelBase(gameObject);
+			viewModel.InitViewModel();
 		}
 
 		/**
@@ -69,8 +70,21 @@ namespace THEBADDEST.UI
          */
 		protected void Binder(string id, object value)
 		{
-			model.Data = value;
-			ModelBinder?.Invoke(id, model);
+			viewModel.Binder(id, value);
+		}
+		protected void StringBinder(string id, string value)
+		{
+			viewModel.StringBinder(id, value);
+		}
+
+		protected void FloatBinder(string id, float value)
+		{
+			viewModel.FloatBinder(id, value);
+		}
+
+		protected void EventBinder(string id, Action value)
+		{
+			viewModel.EventBinder(id, value);
 		}
 
 	}

@@ -4,37 +4,31 @@ using UnityEngine;
 
 namespace THEBADDEST
 {
-
-
+	
 	public class GameTransition : ScriptableObject, ITransition
 	{
 
 		[SerializeField, Options(typeof(IState))] private string targetState;
-		[SerializeField]                          private float  transitTime;
+		[SerializeField]                          private bool   isAnyState;
+		[SerializeField]                          private bool   clearStates;
 		/// <summary>
 		/// The ID of the state to transition to.
 		/// </summary>
-		public string toState => targetState;
-		
-		
-		private IStateMachine stateMachine;
-		public void Init(IStateMachine stateMachine)
-		{
-			this.stateMachine = stateMachine;
-		}
+		public string ToState => targetState;
+		public bool IsAnyState  => isAnyState;
+		public bool ClearStates => clearStates;
 
 
 		public IEnumerator Execute()
 		{
-			if (transitTime > 0)
-				yield return new WaitForSecondsRealtime(transitTime);
 			yield break;
 		}
 
 		[Button]
 		public void Run()
 		{
-			stateMachine?.Transition(this);
+			var stateMachine = ServiceLocator.Global.GetService<IStateMachine>();
+			if(stateMachine!=null) stateMachine.Transition(this);
 		}
 	}
 

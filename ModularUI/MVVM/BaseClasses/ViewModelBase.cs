@@ -7,17 +7,24 @@ namespace THEBADDEST.MVVM
 {
 
 	
-	public class ViewModelBase : MonoBehaviour,IViewModel
+	public class ViewModelBase :IViewModel
 	{
 
 		public event Action<string, IModel<object>> ModelBinder;
 		public Dictionary<string, IView>            views          { get; set; }
 
+		protected GameObject gameObject;
+// Reference to the panel's model
+		private ModelBase model;
+		public ViewModelBase(GameObject gameObject)
+		{
+			this.gameObject = gameObject;
+		}
 		public virtual void InitViewModel()
 		{
 			if (views == null)
 			{
-				var v = GetComponentsInChildren<IView>(true);
+				var v = gameObject.GetComponentsInChildren<IView>(true);
 				views = new Dictionary<string, IView>();
 				foreach (IView view in v)
 				{
@@ -30,21 +37,27 @@ namespace THEBADDEST.MVVM
 				view.Value.Init(this);
 			}
 		}
-		protected void StringBinder(string id, string value)
+
+		public void Binder(string id, object value)
 		{
-			var model = new ModelBase(value);
+			 model = new ModelBase(value);
+			ModelBinder?.Invoke(id, model);
+		}
+		public void StringBinder(string id, string value)
+		{
+			 model = new ModelBase(value);
 			ModelBinder?.Invoke(id, model);
 		}
 
-		protected void FloatBinder(string id, float value)
+		public void FloatBinder(string id, float value)
 		{
-			var model = new ModelBase(value);
+			 model = new ModelBase(value);
 			ModelBinder?.Invoke(id, model);
 		}
 
-		protected void EventBinder(string id, Action value)
+		public void EventBinder(string id, Action value)
 		{
-			var model = new ModelBase(value);
+			model = new ModelBase(value);
 			ModelBinder?.Invoke(id, model);
 		}
 	}

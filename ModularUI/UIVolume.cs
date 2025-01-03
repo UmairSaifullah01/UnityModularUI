@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using THEBADDEST.DatabaseModule;
 using UnityEngine;
 
 
 namespace THEBADDEST.UI
 {
-
+	
 
 	/// <summary>
 	/// The <c>UIVolume</c> class represents a UI volume that acts as a state machine for managing UI states.
@@ -15,12 +14,15 @@ namespace THEBADDEST.UI
 	public class UIVolume : StateMachineBase
 	{
 
+		[SerializeField] Camera uiCamera;
+		IUIStateFactory uiStateFactory;
 		/// <summary>
 		/// Called when the script instance is being loaded.
 		/// Initializes the UI volume by caching states and initializing them.
 		/// </summary>
 		private void Awake()
 		{
+			gameObject.name = nameof(UIVolume);
 			var states = GetComponentsInChildren<IState>(true);
 			foreach (var state in states)
 			{
@@ -30,6 +32,7 @@ namespace THEBADDEST.UI
 			{
 				state.Init(this);
 			}
+			uiStateFactory= new UIStateFactory(transform, uiCamera);
 		}
 
 		/// <summary>
@@ -53,7 +56,26 @@ namespace THEBADDEST.UI
 				onStateLoad?.Invoke(cachedState);
 			}
 		}
+
+		public override IState GetState(string id)
+		{
+			if (cachedStates.TryGetValue(id, out IState cachedState))
+			{
+				return cachedState;
+			}
+			
+			var state=uiStateFactory.CreateState(id);
+			if (state == null)
+			{
+				Debug.Log($"State component not found in state instance with id {id}");
+			}
+			state?.Init(this);
+			cachedStates.Add(id,state);
+			return base.GetState(id);
+		}
+
 		
+
 	}
 
 

@@ -10,7 +10,7 @@ namespace THEBADDEST.UI
 	/// <summary>
 	/// Component that adjusts the anchored positions of a RectTransform to fit within the safe area of the screen.
 	/// </summary>
-	public class SafeArea : MonoBehaviour
+	public class SafeArea : ViewBase
 	{
 
 		Canvas            canvas;

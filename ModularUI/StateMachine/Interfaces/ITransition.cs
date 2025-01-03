@@ -8,11 +8,11 @@ namespace THEBADDEST
 	public interface ITransition
 	{
 
-		string toState     { get; }
-		
+		string      ToState    { get; }
+		bool        IsAnyState { get; }
+		bool        ClearStates { get; }
 		IEnumerator Execute();
-
-		void Run();
+		
 
 	}
 
