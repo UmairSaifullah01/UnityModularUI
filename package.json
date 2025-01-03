@@ -9,6 +9,14 @@
 		"email": "contact@umairsaifullah.com",
 		"url": "https://www.umairsaifullah.com"
 	},
+	"samples": [
+		{
+			"displayName": "Sample",
+			"description": "A Sample in which a character patrol and find target",
+			"path": "Samples~"
+		}
+	]
+	,
 	"documentationUrl": "https://github.com/UmairSaifullah01/UnityModularUI",
 	"repository": {
 		"url": "https://github.com/UmairSaifullah01/UnityModularUI.git",
