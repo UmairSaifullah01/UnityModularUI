@@ -16,7 +16,7 @@
 		"revision": ""
 	},
 	"dependencies": {
-		"ccom.thebaddest.databasemodule": "https://github.com/UmairSaifullah01/Database.git#1.0.0"
+		"com.thebaddest.databasemodule": "https://github.com/UmairSaifullah01/Database.git#1.0.0"
 	}
 }
 			
