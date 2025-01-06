@@ -37,13 +37,19 @@ namespace THEBADDEST
 	[CustomPropertyDrawer(typeof(OptionsAttribute))]
 	public class OptionsDrawer : PropertyDrawer
 	{
-		private          int               selected = 0;
-		private readonly List<string>      options  = new List<string>();
-		static           IEnumerable<Type> typesDerived;
+		private int                                 selected              = 0;
+		private List<string>                        options               = new List<string>();
+		private Dictionary<Type, IEnumerable<Type>> inheritedClassesCache = new Dictionary<Type, IEnumerable<Type>>();
+
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			Type type         = (attribute as OptionsAttribute)?.Type;
-				typesDerived = GetInheritedClasses(type);
+			if (!inheritedClassesCache.TryGetValue(type, out IEnumerable<Type> typesDerived))
+			{
+				typesDerived                = GetInheritedClasses(type);
+				inheritedClassesCache[type] = typesDerived;
+			}
+
 			options.Clear();
 			foreach (var t in typesDerived)
 			{
@@ -62,7 +68,9 @@ namespace THEBADDEST
 		private IEnumerable<Type> GetInheritedClasses(Type givenType)
 		{
 			// Exclude abstract classes and find types that are subclasses of the given type.
-			return Assembly.GetAssembly(givenType).GetTypes().Where(t => t.IsClass && !t.IsAbstract && (t.IsSubclassOf(givenType) || givenType.IsInterface && givenType.IsAssignableFrom(t)));
+			return AppDomain.CurrentDomain.GetAssemblies()
+				.SelectMany(a => a.GetTypes())
+				.Where(t => t.IsClass && !t.IsAbstract && (t.IsSubclassOf(givenType) || givenType.IsInterface && givenType.IsAssignableFrom(t)));
 		}
 	}
 	#endif
