@@ -1,6 +1,9 @@
 ﻿using System;
 using THEBADDEST.MVVM;
+using THEBADDEST.Tweening;
+using UnityEngine;
 using UnityEngine.EventSystems;
+
 
 
 namespace THEBADDEST.UI
@@ -10,12 +13,17 @@ namespace THEBADDEST.UI
 	public class ImageButtonView : ImageView, IPointerClickHandler
 	{
 
-		Action onclickEvent;
+		[SerializeField]Tween  clickTween;
+		Action                onclickEvent;
 
 		public override void Init(IViewModel viewModel)
 		{
 			base.Init(viewModel);
 			ViewModel.ModelBinder += EventBind;
+			if (clickTween != null)
+			{
+				clickTween.onComplete += onclickEvent.Invoke;
+			}
 		}
 
 		void EventBind(string id, IModel<object> model)
@@ -30,7 +38,13 @@ namespace THEBADDEST.UI
 
 		public void OnPointerClick(PointerEventData eventData)
 		{
-			onclickEvent?.Invoke();
+			if (clickTween != null)
+			{
+				StartCoroutine(clickTween.Play(transform));
+			}
+			else{
+				onclickEvent?.Invoke();
+			}
 		}
 
 	}

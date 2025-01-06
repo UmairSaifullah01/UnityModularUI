@@ -1,5 +1,4 @@
 using System.Collections;
-using THEBADDEST.EditorTools;
 using UnityEngine;
 
 
@@ -25,7 +24,7 @@ namespace THEBADDEST
 			yield break;
 		}
 
-		[Button]
+		[EditorTools.Button]
 		public void Run()
 		{
 			var stateMachine = ServiceLocator.Global.GetService<IStateMachine>();
