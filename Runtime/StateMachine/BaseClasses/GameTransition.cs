@@ -24,7 +24,7 @@ namespace THEBADDEST
 			yield break;
 		}
 
-		[Button]
+		[EditorTools.Button]
 		public void Run()
 		{
 			var stateMachine = ServiceLocator.Global.GetService<IStateMachine>();
