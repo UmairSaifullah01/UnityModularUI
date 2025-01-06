@@ -39,7 +39,7 @@ namespace THEBADDEST
 	{
 		private int                                 selected              = 0;
 		private List<string>                        options               = new List<string>();
-		private Dictionary<Type, IEnumerable<Type>> inheritedClassesCache = new Dictionary<Type, IEnumerable<Type>>();
+		private static Dictionary<Type, IEnumerable<Type>> inheritedClassesCache = new Dictionary<Type, IEnumerable<Type>>();
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
