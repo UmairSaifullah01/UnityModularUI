@@ -43,7 +43,6 @@ namespace THEBADDEST
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			Type type         = (attribute as OptionsAttribute)?.Type;
-			if (typesDerived == null)
 				typesDerived = GetInheritedClasses(type);
 			options.Clear();
 			foreach (var t in typesDerived)
@@ -53,6 +52,8 @@ namespace THEBADDEST
 
 			if(!string.IsNullOrEmpty(property.stringValue))
 				selected=options.IndexOf(property.stringValue);
+			if(selected<0|| selected>=options.Count)
+				selected=0;
 			selected = EditorGUI.Popup(position, property.displayName, selected, options.ToArray());
 			if (options.Count != 0)
 				property.stringValue = options[selected];
