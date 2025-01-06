@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 
 namespace THEBADDEST.UI
@@ -17,26 +18,18 @@ namespace THEBADDEST.UI
 			{
 				onObject.gameObject.SetActive(false);
 				offObject.gameObject.SetActive(true);
-				PlayTween(offObject);
+				StartCoroutine(PlayTween(offObject));
 			}
 			else
 			{
 				onObject.gameObject.SetActive(true);
 				offObject.gameObject.SetActive(false);
-				PlayTween(onObject);
+				StartCoroutine(PlayTween(onObject));
 			}
 			if(!clickTween)
 				onclickEvent?.Invoke();
 		}
 		
-
-		void PlayTween(Transform target)
-		{
-			if (clickTween != null)
-			{
-				StartCoroutine(clickTween.Play(target));
-			}
-		}
 
 	}
 }
