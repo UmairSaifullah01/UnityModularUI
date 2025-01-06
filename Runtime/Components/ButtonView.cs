@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using THEBADDEST.MVVM;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,7 +16,6 @@ namespace THEBADDEST.UI
 		{
 			base.Init(viewModel);
 			ViewModel.ModelBinder += EventBind;
-			clickTween.onComplete += () => onclickEvent?.Invoke();
 		}
 
 		void EventBind(string id, IModel<object> model)
@@ -37,12 +37,18 @@ namespace THEBADDEST.UI
 		{
 			if (clickTween != null)
 			{
-				StartCoroutine(clickTween.Play(transform));
+				StartCoroutine(PlayTween(transform));
 			}
 			else
 			{
 				onclickEvent?.Invoke();
 			}
+		}
+
+		protected virtual IEnumerator PlayTween(Transform target)
+		{
+			yield return clickTween.Play(target);
+			onclickEvent?.Invoke();
 		}
 
 	}
