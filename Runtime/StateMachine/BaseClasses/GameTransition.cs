@@ -19,7 +19,7 @@ namespace THEBADDEST
 		public bool ClearStates => clearStates;
 
 
-		public IEnumerator Execute()
+		public virtual IEnumerator Execute()
 		{
 			yield break;
 		}
