@@ -100,6 +100,7 @@ namespace THEBADDEST
 			}
 			
 			if(transition.IsAnyState){
+				yield return transition.Execute();
 				currentAnyState = GetState(transition.ToState);
 				anyStates.Push(currentAnyState);
 				yield return currentAnyState.Enter();
