@@ -50,7 +50,7 @@ namespace THEBADDEST
 			this.transitTime = exitTime;
 			this.IsAnyState  = isAnyState;
 			this.ClearAnyStates = clearAnyStates; 
-			this.ClearAllStates = ClearAllStates; 
+			this.ClearAllStates = clearAllStates; 
 		}
 
 
