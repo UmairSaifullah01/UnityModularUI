@@ -94,9 +94,12 @@ namespace THEBADDEST
 		/// <returns>An IEnumerator which can be used in a coroutine to transition to the target state.</returns>
 		private IEnumerator TransitionTo(ITransition transition)
 		{
-			if (transition.ClearStates)
+			if (transition.ClearAllStates)
 			{
-				yield return ClearStatesCoroutine();
+				yield return ClearAllStatesCoroutine();
+			}else if (transition.ClearAnyStates)
+			{
+				yield return ClearAnyStates();
 			}
 			
 			if(transition.IsAnyState){
@@ -184,15 +187,12 @@ namespace THEBADDEST
 
 		public void ClearStates()
 		{
-			StartCoroutine(ClearStatesCoroutine());
+			StartCoroutine(ClearAllStatesCoroutine());
 		}
 
-		protected virtual IEnumerator ClearStatesCoroutine()
+		protected virtual IEnumerator ClearAllStatesCoroutine()
 		{
-			while (anyStates.Count > 0)
-			{
-				yield return anyStates.Pop().Exit();
-			}
+			yield return ClearAnyStates();
 
 			foreach (var state in cachedStates.Values)
 			{
@@ -203,6 +203,16 @@ namespace THEBADDEST
 				Destroy( state.gameObject);
 			}
 			cachedStates.Clear();
+		}
+
+		protected virtual IEnumerator ClearAnyStates()
+		{
+			while (anyStates.Count > 0)
+			{
+				IState state =  anyStates.Pop();
+				yield return state.Exit();
+				Destroy((state as MonoBehaviour)?.gameObject);
+			}
 		}
 
 	}

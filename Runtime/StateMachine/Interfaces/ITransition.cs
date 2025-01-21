@@ -10,7 +10,8 @@ namespace THEBADDEST
 
 		string      ToState    { get; }
 		bool        IsAnyState { get; }
-		bool        ClearStates { get; }
+		bool        ClearAnyStates { get; }
+		bool        ClearAllStates { get; }
 		IEnumerator Execute();
 		
 
