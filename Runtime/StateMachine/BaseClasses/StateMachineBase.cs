@@ -87,8 +87,7 @@ namespace THEBADDEST
             {
                 yield return ClearAnyStates();
             }
-
-            if (!transition.IsAnyState)
+            else if (!transition.IsAnyState)
             {
                 yield return currentState?.Exit();
                 previousState = currentState;
