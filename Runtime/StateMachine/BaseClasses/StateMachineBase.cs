@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 namespace THEBADDEST
 {
     /// <summary>
@@ -11,10 +12,13 @@ namespace THEBADDEST
     /// </summary>
     public abstract class StateMachineBase : MonoBehaviour, IStateMachine
     {
+
         /// <summary>
         /// The name of the current state.
         /// </summary>
-        public string CurrentStateName { get; private set; }
+        
+        [SerializeField]
+        string currentStateName;
 
         /// <summary>
         /// Dictionary to store cached states.
@@ -102,7 +106,7 @@ namespace THEBADDEST
                 if (currentAnyState != null)
                 {
                     anyStates.Push(currentAnyState);
-                    CurrentStateName = currentAnyState.StateName;
+                    currentStateName = currentAnyState.StateName;
                     yield return currentAnyState.Enter();
                 }
             }
@@ -111,7 +115,7 @@ namespace THEBADDEST
                 currentState = GetState(transition.ToState);
                 if (currentState != null)
                 {
-                    CurrentStateName = currentState.StateName;
+                    currentStateName = currentState.StateName;
                     yield return currentState.Enter();
                 }
             }
@@ -152,7 +156,7 @@ namespace THEBADDEST
             {
                 previousState = currentState;
                 currentState = null;
-                CurrentStateName = string.Empty;
+                currentStateName = string.Empty;
             }
         }
         /// <summary>
@@ -175,13 +179,13 @@ namespace THEBADDEST
             if (anyStates.Count > 0)
             {
                 currentAnyState  = anyStates.Pop();
-                CurrentStateName = currentAnyState.StateName;
+                currentStateName = currentAnyState.StateName;
                 yield return currentAnyState.Enter();
             }
             else
             {
                 currentAnyState  = null;
-                CurrentStateName = string.Empty;
+                currentStateName = string.Empty;
             }
         }
         public void ClearStates()
@@ -212,7 +216,7 @@ namespace THEBADDEST
             {
                 var state = anyStates.Pop();
                 yield return state.Exit();
-
+                cachedStates.Remove(state.GetStateName());
                 if (state is MonoBehaviour mbState)
                     Destroy(mbState.gameObject);
             }
