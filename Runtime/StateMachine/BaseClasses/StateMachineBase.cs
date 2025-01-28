@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace THEBADDEST
@@ -105,33 +106,33 @@ namespace THEBADDEST
             {
                 yield return ClearAnyStates();
             }
-
+            else
+            {
+                yield return currentState?.Exit();
+                previousState = currentState;
+                currentState  = null;
+            }
+            
+            yield return transition.Execute();
             if (transition.IsAnyState)
             {
-                yield return transition.Execute();
                 currentAnyState = GetState(transition.ToState);
                 if (currentAnyState != null)
                 {
                     anyStates.Push(currentAnyState);
                     yield return currentAnyState.Enter();
                 }
-                isTransiting = false;
-                yield break;
             }
-
-            yield return currentState?.Exit();
-            previousState = currentState;
-            currentState = null;
-
-            yield return transition.Execute();
-
-            currentState = GetState(transition.ToState);
-            if (currentState != null)
+            else
             {
-                currentStateName = currentState.StateName;
-                yield return currentState.Enter();
+                currentState = GetState(transition.ToState);
+                if (currentState != null)
+                {
+                    currentStateName = currentState.StateName;
+                    yield return currentState.Enter();
+                }
             }
-
+            
             isTransiting = false;
         }
 
@@ -220,21 +221,19 @@ namespace THEBADDEST
 
         protected virtual IEnumerator ClearAllStatesCoroutine()
         {
-            yield return ClearAnyStates();
+            var states = cachedStates.Values.ToArray();
+            cachedStates.Clear();
 
-            foreach (var state in cachedStates.Values)
+            foreach (var state in states)
             {
                 if (state != null)
+                {
                     yield return state.Exit();
-            }
 
-            foreach (var state in cachedStates.Values)
-            {
-                if (state is MonoBehaviour mbState)
-                    Destroy(mbState.gameObject);
+                    if (state is MonoBehaviour mbState)
+                        Destroy(mbState.gameObject);
+                }
             }
-
-            cachedStates.Clear();
         }
 
         protected virtual IEnumerator ClearAnyStates()
