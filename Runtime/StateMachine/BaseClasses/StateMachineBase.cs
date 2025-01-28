@@ -97,6 +97,7 @@ namespace THEBADDEST
             }
             
             yield return transition.Execute();
+            
             if (transition.IsAnyState)
             {
                 currentAnyState = GetState(transition.ToState);
@@ -133,8 +134,16 @@ namespace THEBADDEST
 
         private IEnumerator ExitAnyStateCoroutine()
         {
-            yield return currentAnyState?.Exit();
-            anyStates.Pop();
+            IState previousAnyState = null;
+            if (anyStates.Count > 0)
+            {
+                previousAnyState = anyStates.Pop();
+            }
+
+            if (previousAnyState != null)
+            {
+                yield return previousAnyState.Exit();
+            }
 
             if (anyStates.Count > 0)
             {
