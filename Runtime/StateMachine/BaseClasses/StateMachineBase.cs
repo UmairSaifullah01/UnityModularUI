@@ -41,13 +41,7 @@ namespace THEBADDEST
         /// </summary>
         public bool isTransiting { get; private set; }
 
-        /// <summary>
-        /// Abstract method to load a state asynchronously.
-        /// </summary>
-        /// <param name="id">The ID of the state to load.</param>
-        /// <param name="onStateLoad">Callback invoked when the state is loaded.</param>
-        public abstract void LoadState(string id, Action<IState> onStateLoad);
-
+       
         /// <summary>
         /// The current any-state of the state machine.
         /// </summary>
@@ -67,18 +61,7 @@ namespace THEBADDEST
             return null;
         }
 
-        /// <summary>
-        /// Enters a specific state.
-        /// </summary>
-        /// <param name="state">The state to enter.</param>
-        public void Entry(IState state)
-        {
-            if (state == null) return;
-
-            currentState = state;
-            currentStateName = currentState.StateName;
-            StartCoroutine(currentState?.Enter());
-        }
+     
 
         /// <summary>
         /// Initiates a transition to a new state based on a transition object.
@@ -106,7 +89,7 @@ namespace THEBADDEST
             {
                 yield return ClearAnyStates();
             }
-            else
+            else if(!transition.IsAnyState)
             {
                 yield return currentState?.Exit();
                 previousState = currentState;
@@ -120,6 +103,7 @@ namespace THEBADDEST
                 if (currentAnyState != null)
                 {
                     anyStates.Push(currentAnyState);
+                    currentStateName = currentAnyState.StateName;
                     yield return currentAnyState.Enter();
                 }
             }
@@ -136,19 +120,7 @@ namespace THEBADDEST
             isTransiting = false;
         }
 
-        /// <summary>
-        /// Initiates an any-state transition.
-        /// </summary>
-        /// <param name="state">The any-state to transition to.</param>
-        public void AnyTransition(IState state)
-        {
-            if (state == null) return;
-
-            currentAnyState = state;
-            anyStates.Push(currentAnyState);
-            currentStateName = currentAnyState.StateName;
-            StartCoroutine(currentAnyState.Enter());
-        }
+       
 
         /// <summary>
         /// Exits the current any-state and transitions to the previous any-state if available.
@@ -186,12 +158,10 @@ namespace THEBADDEST
 
             if (currentAnyState != null)
             {
-                currentStateName = currentAnyState.StateName;
                 currentAnyState.Execute();
             }
             else if (currentState != null)
             {
-                currentStateName = currentState.StateName;
                 currentState?.Execute();
             }
         }
