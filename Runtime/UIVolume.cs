@@ -44,18 +44,6 @@ namespace THEBADDEST.UI
 			StatesExecution();
 		}
 		
-		/// <summary>
-		/// Loads the state with the specified ID and invokes the specified callback when the state is loaded.
-		/// </summary>
-		/// <param name="id">The ID of the state to load.</param>
-		/// <param name="onStateLoad">The callback to invoke when the state is loaded.</param>
-		public override  void LoadState(string id, Action<IState> onStateLoad)
-		{
-			if (cachedStates.TryGetValue(id, out IState cachedState))
-			{
-				onStateLoad?.Invoke(cachedState);
-			}
-		}
 
 		public override IState GetState(string id)
 		{
