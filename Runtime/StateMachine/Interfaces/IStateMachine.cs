@@ -7,7 +7,7 @@ namespace THEBADDEST
 	/// </summary>
 	public interface IStateMachine
 	{
-		bool isTransiting { get; }
+		bool IsTransiting { get; }
 		
 		/// <summary>
 		/// Retrieves a state by its ID.
@@ -31,13 +31,13 @@ namespace THEBADDEST
 		/// <summary>
 		/// Executes the logic of the current state.
 		/// </summary>
-		void StatesExecution();
+		void Execute();
 
 		/// <summary>
 		/// Exits the specified state.
 		/// </summary>
 		/// <param name="state">The state to exit.</param>
-		void Exit(IState state);
+		void ExitState(IState state);
 	
 	}
 }
