@@ -41,7 +41,7 @@ namespace THEBADDEST.UI
 		/// </summary>
 		private void Update()
 		{
-			StatesExecution();
+			Execute();
 		}
 		
 

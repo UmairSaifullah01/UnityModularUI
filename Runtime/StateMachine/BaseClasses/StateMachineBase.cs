@@ -14,7 +14,7 @@ namespace THEBADDEST
         /// <summary>
         /// The name of the current state.
         /// </summary>
-        public string currentStateName;
+        public string CurrentStateName { get; private set; }
 
         /// <summary>
         /// Dictionary to store cached states.
@@ -39,13 +39,13 @@ namespace THEBADDEST
         /// <summary>
         /// Flag indicating if the state machine is currently in a transition.
         /// </summary>
-        public bool isTransiting { get; private set; }
+        public bool IsTransiting { get; private set; }
 
-       
         /// <summary>
         /// The current any-state of the state machine.
         /// </summary>
         protected IState currentAnyState;
+        
 
         /// <summary>
         /// Retrieves a state from the cached states dictionary based on its ID.
@@ -61,16 +61,14 @@ namespace THEBADDEST
             return null;
         }
 
-     
-
         /// <summary>
         /// Initiates a transition to a new state based on a transition object.
         /// </summary>
         /// <param name="transition">The transition object specifying the target state.</param>
         public void Transition(ITransition transition)
         {
-            if (isTransiting) return;
-            isTransiting = true;
+            if (IsTransiting) return;
+            IsTransiting = true;
             StartCoroutine(TransitionTo(transition));
         }
 
@@ -83,27 +81,29 @@ namespace THEBADDEST
         {
             if (transition.ClearAllStates)
             {
-                yield return ClearAllStatesCoroutine();
+                yield return ClearAllStates();
             }
             else if (transition.ClearAnyStates)
             {
                 yield return ClearAnyStates();
             }
-            else if(!transition.IsAnyState)
+
+            if (!transition.IsAnyState)
             {
                 yield return currentState?.Exit();
                 previousState = currentState;
-                currentState  = null;
+                currentState = null;
             }
-            
+
             yield return transition.Execute();
+
             if (transition.IsAnyState)
             {
                 currentAnyState = GetState(transition.ToState);
                 if (currentAnyState != null)
                 {
                     anyStates.Push(currentAnyState);
-                    currentStateName = currentAnyState.StateName;
+                    CurrentStateName = currentAnyState.StateName;
                     yield return currentAnyState.Enter();
                 }
             }
@@ -112,16 +112,50 @@ namespace THEBADDEST
                 currentState = GetState(transition.ToState);
                 if (currentState != null)
                 {
-                    currentStateName = currentState.StateName;
+                    CurrentStateName = currentState.StateName;
                     yield return currentState.Enter();
                 }
             }
-            
-            isTransiting = false;
+
+            IsTransiting = false;
         }
 
-       
+        
 
+        /// <summary>
+        /// Executes the current state or any-state.
+        /// </summary>
+        public void Execute()
+        {
+            if (IsTransiting) return;
+
+            if (currentAnyState != null)
+            {
+                currentAnyState.Execute();
+            }
+            else if (currentState != null)
+            {
+                currentState.Execute();
+            }
+        }
+
+        /// <summary>
+        /// Exits a specific state.
+        /// </summary>
+        /// <param name="state">The state to exit.</param>
+        public void ExitState(IState state)
+        {
+            if (state == null) return;
+
+            state.Exit();
+
+            if (currentState == state)
+            {
+                previousState = currentState;
+                currentState = null;
+                CurrentStateName = string.Empty;
+            }
+        }
         /// <summary>
         /// Exits the current any-state and transitions to the previous any-state if available.
         /// </summary>
@@ -133,63 +167,30 @@ namespace THEBADDEST
 
         private IEnumerator ExitAnyStateCoroutine()
         {
-            yield return currentAnyState?.Exit();
-            anyStates.Pop();
+            if (anyStates.Count > 0)
+            {
+                var previousAnyState = anyStates.Pop();
+                yield return previousAnyState.Exit();
+            }
 
             if (anyStates.Count > 0)
             {
-                currentAnyState = anyStates.Peek();
-                currentStateName = currentAnyState.StateName;
+                currentAnyState  = anyStates.Pop();
+                CurrentStateName = currentAnyState.StateName;
                 yield return currentAnyState.Enter();
             }
             else
             {
-                currentAnyState = null;
-                currentStateName = string.Empty;
+                currentAnyState  = null;
+                CurrentStateName = string.Empty;
             }
         }
-
-        /// <summary>
-        /// Executes the current state or any-state.
-        /// </summary>
-        public void StatesExecution()
-        {
-            if (isTransiting) return;
-
-            if (currentAnyState != null)
-            {
-                currentAnyState.Execute();
-            }
-            else if (currentState != null)
-            {
-                currentState?.Execute();
-            }
-        }
-
-        /// <summary>
-        /// Exits a specific state.
-        /// </summary>
-        /// <param name="state">The state to exit.</param>
-        public void Exit(IState state)
-        {
-            if (state == null) return;
-
-            state.Exit();
-
-            if (currentState == state)
-            {
-                previousState = currentState;
-                currentState = null;
-                currentStateName = string.Empty;
-            }
-        }
-
         public void ClearStates()
         {
-            StartCoroutine(ClearAllStatesCoroutine());
+            StartCoroutine(ClearAllStates());
         }
 
-        protected virtual IEnumerator ClearAllStatesCoroutine()
+        private IEnumerator ClearAllStates()
         {
             var states = cachedStates.Values.ToArray();
             cachedStates.Clear();
@@ -206,11 +207,11 @@ namespace THEBADDEST
             }
         }
 
-        protected virtual IEnumerator ClearAnyStates()
+        private IEnumerator ClearAnyStates()
         {
             while (anyStates.Count > 0)
             {
-                IState state = anyStates.Pop();
+                var state = anyStates.Pop();
                 yield return state.Exit();
 
                 if (state is MonoBehaviour mbState)
