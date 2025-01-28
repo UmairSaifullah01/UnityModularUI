@@ -162,6 +162,7 @@ namespace THEBADDEST
 			if (isTransiting) return;
 			if (currentAnyState != null)
 			{
+				currentStateName = currentAnyState.StateName;
 				currentAnyState.Execute();
 			}
 			else if (currentState != null)
@@ -196,11 +197,13 @@ namespace THEBADDEST
 
 			foreach (var state in cachedStates.Values)
 			{
-				yield return state.Exit();
+				if(state!=null)
+					yield return state.Exit();
 			}
-			foreach (MonoBehaviour state in cachedStates.Values )
+			foreach (var state in cachedStates.Values )
 			{
-				Destroy( state.gameObject);
+				if(state!=null)
+					Destroy( (state as MonoBehaviour)?.gameObject);
 			}
 			cachedStates.Clear();
 		}
@@ -212,7 +215,8 @@ namespace THEBADDEST
 				IState state =  anyStates.Pop();
 				yield return state.Exit();
 				Destroy((state as MonoBehaviour)?.gameObject);
-			}
+			}	
+			anyStates.Clear();
 		}
 
 	}
