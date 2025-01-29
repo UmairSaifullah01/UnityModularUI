@@ -47,7 +47,7 @@ namespace THEBADDEST.UI
 
 		public override IState GetState(string id)
 		{
-			if (cachedStates.TryGetValue(id, out IState cachedState))
+			if (cachedStates.TryGetValue(id, out IState cachedState) && cachedState != null)
 			{
 				return cachedState;
 			}
