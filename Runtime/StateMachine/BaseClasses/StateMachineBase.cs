@@ -7,9 +7,10 @@ using UnityEngine;
 
 namespace THEBADDEST
 {
-    /// <summary>
-    /// Abstract base class for implementing a state machine in Unity.
-    /// </summary>
+
+        /// <summary>
+        /// Abstract base class for implementing a state machine in Unity.
+        /// </summary>
     public abstract class StateMachineBase : MonoBehaviour, IStateMachine
     {
 
@@ -58,10 +59,11 @@ namespace THEBADDEST
         /// <returns>The state associated with the specified ID.</returns>
         public virtual IState GetState(string id)
         {
+            Debug.Log($"[StateMachine] Getting state '{id}' in state machine '{name}'.");
             if (cachedStates.TryGetValue(id, out var state))
                 return state;
 
-            Debug.LogWarning($"State with ID {id} not found.");
+            Debug.LogWarning($"[StateMachine] State with ID {id} not found in state machine '{name}'.");
             return null;
         }
 
@@ -71,6 +73,7 @@ namespace THEBADDEST
         /// <param name="transition">The transition object specifying the target state.</param>
         public void Transition(ITransition transition)
         {
+            Debug.Log($"[StateMachine] Initiating transition to '{transition.ToState}' in state machine '{name}'.");
             if (IsTransiting) return;
             IsTransiting = true;
             StartCoroutine(TransitionTo(transition));
@@ -83,12 +86,15 @@ namespace THEBADDEST
         /// <returns>An IEnumerator which can be used in a coroutine to transition to the target state.</returns>
         private IEnumerator TransitionTo(ITransition transition)
         {
+            Debug.Log($"[StateMachine] Transitioning to '{transition.ToState}' in state machine '{name}'.");
             if (transition.ClearAllStates)
             {
+                Debug.Log($"[StateMachine] Clearing all states in state machine '{name}'.");
                 yield return ClearAllStates();
             }
             else if (transition.ClearAnyStates)
             {
+                Debug.Log($"[StateMachine] Clearing any-states in state machine '{name}'.");
                 yield return ClearAnyStates();
             }
             else if (!transition.IsAnyState)
@@ -102,6 +108,7 @@ namespace THEBADDEST
 
             if (transition.IsAnyState)
             {
+                Debug.Log($"[StateMachine] Transitioning to any-state '{transition.ToState}' in state machine '{name}'.");
                 currentAnyState = GetState(transition.ToState);
                 if (currentAnyState != null)
                 {
@@ -112,6 +119,7 @@ namespace THEBADDEST
             }
             else
             {
+                Debug.Log($"[StateMachine] Transitioning to state '{transition.ToState}' in state machine '{name}'.");
                 currentState = GetState(transition.ToState);
                 if (currentState != null)
                 {
@@ -120,6 +128,7 @@ namespace THEBADDEST
                 }
             }
 
+            Debug.Log($"[StateMachine] Transition to '{transition.ToState}' complete in state machine '{name}'.");
             IsTransiting = false;
         }
 
@@ -134,10 +143,12 @@ namespace THEBADDEST
 
             if (currentAnyState != null)
             {
+                Debug.Log($"[StateMachine] Executing any-state '{currentAnyState.StateName}' in state machine '{name}'.");
                 currentAnyState.Execute();
             }
             else if (currentState != null)
             {
+                Debug.Log($"[StateMachine] Executing state '{currentState.StateName}' in state machine '{name}'.");
                 currentState.Execute();
             }
         }
@@ -148,6 +159,7 @@ namespace THEBADDEST
         /// <param name="state">The state to exit.</param>
         public void ExitState(IState state)
         {
+            Debug.Log($"[StateMachine] Exiting state '{state.StateName}' in state machine '{name}'.");
             if (state == null) return;
 
             state.Exit();
@@ -164,12 +176,14 @@ namespace THEBADDEST
         /// </summary>
         public void ExitAnyState()
         {
+            Debug.Log($"[StateMachine] Exiting any-state '{currentAnyState.StateName}' in state machine '{name}'.");
             if (currentAnyState == null) return;
             StartCoroutine(ExitAnyStateCoroutine());
         }
 
         private IEnumerator ExitAnyStateCoroutine()
         {
+            Debug.Log($"[StateMachine] Exiting any-state '{currentAnyState.StateName}' in state machine '{name}'.");
             if (anyStates.Count > 0)
             {
                 var previousAnyState = anyStates.Pop();
@@ -190,11 +204,13 @@ namespace THEBADDEST
         }
         public void ClearStates()
         {
+            Debug.Log($"[StateMachine] Clearing all states in state machine '{name}'.");
             StartCoroutine(ClearAllStates());
         }
 
         private IEnumerator ClearAllStates()
         {
+            Debug.Log($"[StateMachine] Clearing all states in state machine '{name}'.");
             var states = cachedStates.Values.ToArray();
             cachedStates.Clear();
 
@@ -202,6 +218,7 @@ namespace THEBADDEST
             {
                 if (state != null)
                 {
+                    Debug.Log($"[StateMachine] Clearing state '{state.StateName}' in state machine '{name}'.");
                     yield return state.Exit();
 
                     if (state is MonoBehaviour mbState)
@@ -212,6 +229,7 @@ namespace THEBADDEST
 
         private IEnumerator ClearAnyStates()
         {
+            Debug.Log($"[StateMachine] Clearing any-states in state machine '{name}'.");
             while (anyStates.Count > 0)
             {
                 var state = anyStates.Pop();
