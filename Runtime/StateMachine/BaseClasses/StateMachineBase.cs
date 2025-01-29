@@ -186,7 +186,6 @@ namespace THEBADDEST
                     currentAnyState = anyStates.Pop();
                     if (currentAnyState != null)
                     {
-                        currentAnyState = anyStates.Pop();
                         currentStateName = currentAnyState.StateName;
                         yield return currentAnyState.Enter();
                         yield break;
