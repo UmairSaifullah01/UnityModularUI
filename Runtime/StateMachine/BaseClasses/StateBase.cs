@@ -11,7 +11,8 @@ namespace THEBADDEST
 	/// </summary>
 	public abstract class StateBase :MonoBehaviour, IState
 	{
-		public virtual string        StateName    { get; protected set; }
+
+		public virtual string        StateName    => this.GetType().Name;
 		public         IStateMachine StateMachine { get; protected set; }
 		/// <summary>
 		/// Initializes the state with the given state machine.

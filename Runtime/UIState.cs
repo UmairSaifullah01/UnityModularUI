@@ -14,7 +14,7 @@ namespace THEBADDEST.UI
      * It implements the `IState` and `IViewModel` interfaces and derives from `MonoBehaviour`.
      * This class provides functionality for managing the panel's state, transitions, and view model.
      */
-	public abstract class UIPanel : StateBase, IViewModel
+	public abstract class UIState : StateBase, IViewModel
 	{
 
 		[SerializeField]private InterfaceReference<ITransition>[] gameTransitions;
