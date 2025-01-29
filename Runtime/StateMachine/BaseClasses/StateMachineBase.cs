@@ -196,7 +196,7 @@ namespace THEBADDEST
             else
             {
                 currentAnyState  = null;
-                currentStateName = string.Empty;
+                currentStateName = currentState == null ? string.Empty : currentState.StateName;
             }
         }
         public void ClearStates()
