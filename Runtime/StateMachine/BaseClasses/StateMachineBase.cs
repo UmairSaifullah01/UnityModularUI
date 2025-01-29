@@ -215,8 +215,10 @@ namespace THEBADDEST
             while (anyStates.Count > 0)
             {
                 var state = anyStates.Pop();
+                var stateName=state.GetStateName();
+                if(!string.IsNullOrEmpty(stateName)&& cachedStates.ContainsKey(stateName))
+                    cachedStates.Remove(stateName);
                 yield return state.Exit();
-                cachedStates.Remove(state.GetStateName());
                 if (state is MonoBehaviour mbState)
                     Destroy(mbState.gameObject);
             }
