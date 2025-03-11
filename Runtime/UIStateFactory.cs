@@ -37,9 +37,14 @@ namespace THEBADDEST.UI
 			var canvas = stateInstance?.GetComponent<Canvas>();
 			if (canvas == null)
 			{
-				Debug.Log($"Canvas component not found in state instance with id {id}");
-				return null;
+				 canvas = stateInstance?.GetComponentInChildren<Canvas>();
+				 if (canvas == null)
+				 {
+					 Debug.Log($"Canvas component not found in state instance with id {id}");
+					 return null;
+				 }
 			}
+			
 
 			canvas.worldCamera = _uiCamera;
 
