@@ -11,7 +11,7 @@ namespace THEBADDEST.UI
 	/// <summary>
 	/// Base class for implementing a view in the MVVM pattern.
 	/// </summary>
-	public class ViewBase : MonoBehaviour, IView
+	public abstract class ViewBase : MonoBehaviour, IView
 	{
 		/// <summary>
 		/// Gets the unique identifier of the view.
@@ -44,11 +44,7 @@ namespace THEBADDEST.UI
 		/// <summary>
 		/// Retrieves the transform component of the view.
 		/// </summary>
-		/// <returns>The transform component of the view.</returns>
-		public Transform GetTransform()
-		{
-			return transform;
-		}
+		public Transform transformObject => transform;
 	}
 
 

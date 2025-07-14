@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using THEBADDEST.Tasks;
 
 
 namespace THEBADDEST
@@ -21,25 +22,40 @@ namespace THEBADDEST
 		IStateMachine StateMachine { get; }
 
 		/// <summary>
+		/// Indicates whether the state is currently paused.
+		/// </summary>
+		bool Paused { get; }
+
+		/// <summary>
 		/// Initializes the state with a reference to the state machine.
 		/// </summary>
 		/// <param name="stateMachine">The state machine that the state belongs to.</param>
-		void Init(IStateMachine stateMachine);
-    
+		UTask Init(IStateMachine stateMachine);
+
 		/// <summary>
 		/// Executes the logic of the state.
 		/// </summary>
-		void Execute();
+		UTask Execute();
 
 		/// <summary>
 		/// Actions to be performed when entering the state.
 		/// </summary>
-		IEnumerator Enter();
+		UTask Enter();
 
 		/// <summary>
 		/// Actions to be performed when exiting the state.
 		/// </summary>
-		IEnumerator Exit();
+		UTask Exit();
+
+		/// <summary>
+		/// Pauses the state execution.
+		/// </summary>
+		UTask Pause();
+
+		/// <summary>
+		/// Resumes the state execution.
+		/// </summary>
+		UTask Resume();
 	}
 
 

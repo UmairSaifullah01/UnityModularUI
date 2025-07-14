@@ -19,19 +19,22 @@ namespace THEBADDEST.UI
 		public override void Init(IViewModel viewModel)
 		{
 			base.Init(viewModel);
-			ViewModel.ModelBinder += EventBind;
 			if (clickTween != null)
 			{
 				clickTween.onComplete += onclickEvent.Invoke;
 			}
 		}
 
-		void EventBind(string id, IModel<object> model)
+		protected override void Bind(string id, IModel<object> model)
 		{
 			if (!this.Id.Equals(id)) return;
-			if (model.Data is Action action)
+			base.Bind(id, model);
+			if (Id.Equals(id))
 			{
-				onclickEvent = action;
+				if (model.Data is Action action)
+				{
+					onclickEvent = action;
+				}
 			}
 		}
 

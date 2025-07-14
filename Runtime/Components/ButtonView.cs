@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using THEBADDEST.MVVM;
+using THEBADDEST.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using THEBADDEST.Tweening;
@@ -37,7 +38,7 @@ namespace THEBADDEST.UI
 		{
 			if (clickTween != null)
 			{
-				StartCoroutine(PlayTween(transform));
+				 PlayTweenAsync(transform);
 			}
 			else
 			{
@@ -45,10 +46,12 @@ namespace THEBADDEST.UI
 			}
 		}
 
-		protected virtual IEnumerator PlayTween(Transform target)
+		protected virtual async void PlayTweenAsync(Transform target)
 		{
-			yield return clickTween.Play(target);
+			clickTween.PlayWithTarget(target);
+			await clickTween.WaitForCompletion().ToUTask();
 			onclickEvent?.Invoke();
+		
 		}
 
 	}

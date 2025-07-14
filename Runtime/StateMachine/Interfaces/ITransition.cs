@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using THEBADDEST.Tasks;
 
 
 namespace THEBADDEST
@@ -12,8 +13,9 @@ namespace THEBADDEST
 		bool        IsAnyState { get; }
 		bool        ClearAnyStates { get; }
 		bool        ClearAllStates { get; }
-		IEnumerator Execute();
-		
+
+		UTask Execute();
+
 
 	}
 
