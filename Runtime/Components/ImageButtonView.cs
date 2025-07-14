@@ -1,9 +1,8 @@
 ﻿using System;
 using THEBADDEST.MVVM;
-using THEBADDEST.Tweening;
+using THEBADDEST.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
 
 
 namespace THEBADDEST.UI
@@ -13,17 +12,8 @@ namespace THEBADDEST.UI
 	public class ImageButtonView : ImageView, IPointerClickHandler
 	{
 
-		[SerializeField]Tween  clickTween;
-		Action                onclickEvent;
-
-		public override void Init(IViewModel viewModel)
-		{
-			base.Init(viewModel);
-			if (clickTween != null)
-			{
-				clickTween.onComplete += onclickEvent.Invoke;
-			}
-		}
+		Action onclickEvent;
+		
 
 		protected override void Bind(string id, IModel<object> model)
 		{
@@ -38,16 +28,19 @@ namespace THEBADDEST.UI
 			}
 		}
 
+		protected virtual async UTask PlayEffectAsync(Transform target)
+		{
+		}
 
 		public void OnPointerClick(PointerEventData eventData)
 		{
-			if (clickTween != null)
-			{
-				StartCoroutine(clickTween.Play(transform));
-			}
-			else{
-				onclickEvent?.Invoke();
-			}
+			OnClickAsync();
+		}
+
+		private async void OnClickAsync()
+		{
+			await PlayEffectAsync(transform);
+			onclickEvent?.Invoke();
 		}
 
 	}

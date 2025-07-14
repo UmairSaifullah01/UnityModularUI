@@ -1,16 +1,17 @@
 using System;
-using System.Collections;
 using THEBADDEST.MVVM;
 using THEBADDEST.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using THEBADDEST.Tweening;
+
+
 namespace THEBADDEST.UI
 {
+
+
 	public class ButtonView : ViewBase, IPointerClickHandler
 	{
 
-		[SerializeField] protected Tween clickTween;
 		protected Action onclickEvent;
 
 		public override void Init(IViewModel viewModel)
@@ -34,25 +35,18 @@ namespace THEBADDEST.UI
 			PerformClick();
 		}
 
-		protected virtual void PerformClick()
+		protected virtual async void PerformClick()
 		{
-			if (clickTween != null)
-			{
-				 PlayTweenAsync(transform);
-			}
-			else
-			{
-				onclickEvent?.Invoke();
-			}
+			await PlayEffectAsync(transform);
+			onclickEvent?.Invoke();
 		}
 
-		protected virtual async void PlayTweenAsync(Transform target)
+		protected virtual async UTask PlayEffectAsync(Transform target)
 		{
-			clickTween.PlayWithTarget(target);
-			await clickTween.WaitForCompletion().ToUTask();
-			onclickEvent?.Invoke();
-		
+			// Override to play effect
 		}
 
 	}
+
+
 }

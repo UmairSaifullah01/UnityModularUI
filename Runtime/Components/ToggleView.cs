@@ -1,8 +1,7 @@
 ﻿using THEBADDEST.MVVM;
 using UnityEngine;
 using System;
-using System.Collections;
-using THEBADDEST.Tweening;
+using THEBADDEST.Tasks;
 using UnityEngine.EventSystems;
 
 
@@ -12,8 +11,7 @@ namespace THEBADDEST.UI
 
 	public class ToggleView : ViewBase, IPointerClickHandler
 	{
-		[SerializeField] protected Tween     clickTween;
-		[SerializeField]           Transform onObject;
+		[SerializeField]  Transform onObject;
 		[SerializeField]           Transform offObject;
 		
 		Action<bool> onValueChanged;
@@ -44,30 +42,27 @@ namespace THEBADDEST.UI
 			}
 		}
 
-		void PerformClick()
+		protected virtual async UTask PlayEffectAsync(Transform target)
+		{
+		
+		}
+
+		async void PerformClick()
 		{
 			if (onObject.gameObject.activeSelf)
 			{
 				onObject.gameObject.SetActive(false);
 				offObject.gameObject.SetActive(true);
-				StartCoroutine(PlayTween(offObject));
+				await PlayEffectAsync(offObject);
 			}
 			else
 			{
 				onObject.gameObject.SetActive(true);
 				offObject.gameObject.SetActive(false);
-				StartCoroutine(PlayTween(onObject));
+				await PlayEffectAsync(onObject);
 			}
-			if(!clickTween)
-			{
-				onValueChanged?.Invoke(onObject.gameObject.activeSelf);     
-			}
-		}
 
-		IEnumerator PlayTween(Transform target)
-		{
-			yield return clickTween.Play(target);
-			onValueChanged?.Invoke(onObject.gameObject.activeSelf);     
+			onValueChanged?.Invoke(onObject.gameObject.activeSelf);
 		}
 
 	}
