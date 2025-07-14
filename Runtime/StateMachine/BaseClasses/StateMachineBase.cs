@@ -51,6 +51,15 @@ namespace THEBADDEST
 		/// </summary>
 		protected IState currentAnyState;
 
+		[SerializeField]
+		private bool enableDebugLogs = true;
+
+		private static readonly string LogTag = "<color=orange>[UI-StateMachine]</color>";
+		private void DebugLogState(string stateName, string action)
+		{
+			if (!enableDebugLogs) return;
+			Debug.Log($"{LogTag} Current State : {stateName} - {action}.");
+		}
 
 		/// <summary>
 		/// Retrieves a state from the cached states dictionary based on its ID.
@@ -93,14 +102,24 @@ namespace THEBADDEST
 			}
 			else if (!transition.IsAnyState)
 			{
-				await currentState.Exit();
+				if (currentState != null)
+				{
+					await currentState.Exit();
+					DebugLogState(currentState.StateName, "Exit");
+				}
 				previousState = currentState;
 				currentState = null;
 			}
 
-			//yield return transition.Execute();
+			await transition.Execute();
 			if (transition.IsAnyState)
 			{
+				// Pause the current state when entering an any-state
+				if (currentState != null && !currentState.Paused)
+				{
+					await currentState.Pause();
+					DebugLogState(currentState.StateName, "Paused");
+				}
 				currentAnyState = GetState(transition.ToState);
 				if (currentAnyState is MonoBehaviour mbState && mbState != null)
 				{
@@ -110,7 +129,8 @@ namespace THEBADDEST
 					}
 
 					currentStateName = currentAnyState.StateName;
-					currentAnyState.Enter();
+					await currentAnyState.Enter();
+					DebugLogState(currentAnyState.StateName, "Entered");
 				}
 			}
 			else
@@ -119,7 +139,8 @@ namespace THEBADDEST
 				if (currentState is MonoBehaviour mbState && mbState != null)
 				{
 					currentStateName = currentState.StateName;
-					currentState.Enter();
+					await currentState.Enter();
+					DebugLogState(currentState.StateName, "Entered");
 				}
 			}
 
@@ -162,19 +183,22 @@ namespace THEBADDEST
 		/// <summary>
 		/// Exits the current any-state and transitions to the previous any-state if available.
 		/// </summary>
-		public void ExitAnyState()
+		public async void ExitAnyState()
 		{
 			if (currentAnyState == null) return;
-			StartCoroutine(ExitAnyStateCoroutine());
+			await ExitAnyStateAsync();
 		}
 
-		private IEnumerator ExitAnyStateCoroutine()
+		private async Tasks.UTask ExitAnyStateAsync()
 		{
 			if (anyStates.Count > 0)
 			{
 				var previousAnyState = anyStates.Pop();
 				if (previousAnyState is MonoBehaviour mbState && mbState != null)
-					previousAnyState.Exit();
+				{
+					await previousAnyState.Exit();
+					DebugLogState(previousAnyState.StateName, "Exit");
+				}
 			}
 
 			if (anyStates.Count > 0)
@@ -189,8 +213,9 @@ namespace THEBADDEST
 							anyStates.Push(currentAnyState);
 						}
 						currentStateName = currentAnyState.StateName;
-						currentAnyState.Enter();
-						yield break;
+						await currentAnyState.Enter();
+						DebugLogState(currentAnyState.StateName, "Entered");
+						return;
 					}
 				}
 			}
@@ -198,6 +223,12 @@ namespace THEBADDEST
 			{
 				currentAnyState = null;
 				currentStateName = currentState == null ? string.Empty : currentState.StateName;
+				// Resume the current state when all any-states are exited
+				if (currentState != null && currentState.Paused)
+				{
+					await currentState.Resume();
+					DebugLogState(currentState.StateName, "Resumed");
+				}
 			}
 		}
 

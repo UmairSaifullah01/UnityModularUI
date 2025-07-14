@@ -44,11 +44,7 @@ namespace THEBADDEST.UI
 		/// <summary>
 		/// Retrieves the transform component of the view.
 		/// </summary>
-		/// <returns>The transform component of the view.</returns>
-		public Transform GetTransform()
-		{
-			return transform;
-		}
+		public Transform transformObject => transform;
 	}
 
 

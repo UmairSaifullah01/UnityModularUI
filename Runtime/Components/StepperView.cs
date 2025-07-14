@@ -61,6 +61,6 @@ namespace THEBADDEST.UI
         }
 
         public virtual void Active(bool active) => gameObject.SetActive(active);
-        public Transform GetTransform() => transform;
+        public Transform transformObject => transform;
     }
 } 

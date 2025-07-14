@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using THEBADDEST.MVVM;
 using UnityEngine;
@@ -10,6 +9,7 @@ namespace THEBADDEST.UI
     {
         public virtual string Id => gameObject.name;
         public IViewModel ViewModel { get; set; }
+        private System.Action<int> onValueChangedAction;
 
         protected override void OnEnable()
         {
@@ -49,15 +49,19 @@ namespace THEBADDEST.UI
                         options.Add(new OptionData(s));
                     RefreshShownValue();
                 }
+                else if (model.Data is System.Action<int> action)
+                {
+                    onValueChangedAction = action;
+                }
             }
         }
 
         void OnDropdownValueChanged(int newValue)
         {
-            // Optionally, notify ViewModel or raise event
+            onValueChangedAction?.Invoke(newValue);
         }
 
         public virtual void Active(bool active) => gameObject.SetActive(active);
-        public Transform GetTransform() => transform;
+        public Transform transformObject => transform;
     }
 } 

@@ -9,6 +9,7 @@ namespace THEBADDEST.UI
     {
         public virtual string Id => gameObject.name;
         public IViewModel ViewModel { get; set; }
+        private Action<string> onValueChangedAction;
 
         protected override void OnEnable()
         {
@@ -32,23 +33,30 @@ namespace THEBADDEST.UI
 
         protected virtual void Bind(string id, IModel<object> model)
         {
-            if (Id.Equals(id) && model.Data is string strValue)
+            if (Id.Equals(id))
             {
-                text = strValue;
+                if (model.Data is string strValue)
+                {
+                    text = strValue;
+                }
+                else if (model.Data is Action<string> action)
+                {
+                    onValueChangedAction = action;
+                }
             }
         }
 
         void OnTextChanged(string newText)
         {
-            // Optionally, notify ViewModel or raise event
+            onValueChangedAction?.Invoke(newText);
         }
 
         void OnEndEdit(string finalText)
         {
-            // Optionally, notify ViewModel or raise event
+            onValueChangedAction?.Invoke(finalText);
         }
 
         public virtual void Active(bool active) => gameObject.SetActive(active);
-        public Transform GetTransform() => transform;
+        public Transform transformObject => transform;
     }
 } 

@@ -27,8 +27,7 @@ namespace THEBADDEST.MVVM
 		/// <summary>
 		/// Gets the transform of the view's GameObject.
 		/// </summary>
-		/// <returns>The transform of the view's GameObject.</returns>
-		Transform GetTransform();
+		Transform transformObject { get; }
 
 		/// <summary>
 		/// Activates or deactivates the view.

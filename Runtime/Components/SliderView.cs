@@ -23,7 +23,7 @@ namespace THEBADDEST.UI
 
 		public virtual void Active(bool active) => gameObject.SetActive(active);
 
-		public Transform GetTransform() => transform;
+		public Transform transformObject => transform;
 
 		void Bind(string id, IModel<object> model)
 		{

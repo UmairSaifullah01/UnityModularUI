@@ -29,10 +29,14 @@ namespace THEBADDEST.UI
                 {
                     sprite = s;
                 }
+                else if (model.Data is List<Sprite> spriteList)
+                {
+                    iconSet = spriteList;
+                }
             }
         }
 
         public virtual void Active(bool active) => gameObject.SetActive(active);
-        public Transform GetTransform() => transform;
+        public Transform transformObject => transform;
     }
 } 
