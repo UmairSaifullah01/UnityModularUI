@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using THEBADDEST.MVVM;
+using THEBADDEST.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -16,8 +17,6 @@ namespace THEBADDEST.UI
      */
 	public abstract class UIState : StateBase, IViewModel
 	{
-
-		[SerializeField]private InterfaceReference<ITransition>[] gameTransitions;
 		// Event triggered when the model data needs to be bound to the view
 		public event Action<string, IModel<object>> ModelBinder
 		{
@@ -30,6 +29,8 @@ namespace THEBADDEST.UI
 			get => viewModel.views;
 			set => viewModel.views = value;
 		}
+
+		public ITransition[] uiTransitions{get; set;}
 		
 		protected ViewModelBase        viewModel;
 
@@ -40,15 +41,14 @@ namespace THEBADDEST.UI
          * It also initializes the view model and sets the panel's model to null.
          * @param stateMachine The state machine that manages the panel's state.
          */
-		public override void Init(IStateMachine stateMachine)
+		public override async UTask Init(IStateMachine stateMachine)
 		{
 			transitions = new Dictionary<string, ITransition>();
-			foreach (var transition in gameTransitions)
+			foreach (var transition in uiTransitions)
 			{
-				if (!transitions.ContainsKey(transition.Reference.ToState))
-					transitions.Add(transition.Reference.ToState, transition.Reference);
+				transitions.TryAdd(transition.ToState, transition);
 			}
-			base.Init(stateMachine);;
+			await base.Init(stateMachine);;
 			InitViewModel();
 			gameObject.SetActive(false);
 		}
@@ -87,6 +87,13 @@ namespace THEBADDEST.UI
 			viewModel.EventBinder(id, value);
 		}
 
+		protected void GoToState(string state)
+		{
+			if (transitions.TryGetValue(state, out var transition))
+			{
+				StateMachine.Transition(transition);
+			}
+		}
 	}
 
 

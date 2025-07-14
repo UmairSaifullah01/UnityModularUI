@@ -11,7 +11,7 @@ namespace THEBADDEST.UI
 	/// <summary>
 	/// Base class for implementing a view in the MVVM pattern.
 	/// </summary>
-	public class ViewBase : MonoBehaviour, IView
+	public abstract class ViewBase : MonoBehaviour, IView
 	{
 		/// <summary>
 		/// Gets the unique identifier of the view.

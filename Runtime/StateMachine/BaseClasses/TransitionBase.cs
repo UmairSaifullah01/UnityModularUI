@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using THEBADDEST.Tasks;
 using UnityEngine;
 
 
@@ -22,11 +23,10 @@ namespace THEBADDEST
 		/// </summary>
 		public float transitTime { get; }
 
-		public IEnumerator Execute()
+		public async UTask Execute()
 		{
 			if (transitTime > 0)
-				yield return new WaitForSecondsRealtime(transitTime);
-			yield break;
+				await UTask.Delay(transitTime);
 		}
 
 		public void Run()

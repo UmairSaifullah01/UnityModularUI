@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using THEBADDEST.Tasks;
 using UnityEngine;
 
 
@@ -9,16 +10,18 @@ namespace THEBADDEST
 	/// <summary>
 	/// Abstract base class for implementing states in a state machine.
 	/// </summary>
-	public abstract class StateBase :MonoBehaviour, IState
+	public abstract class StateBase : MonoBehaviour, IState
 	{
 
-		public virtual string        StateName    => this.GetType().Name;
-		public         IStateMachine StateMachine { get; protected set; }
+		public virtual string StateName => this.GetType().Name;
+		public IStateMachine StateMachine { get; protected set; }
+		public bool Paused { get; protected set; }
+
 		/// <summary>
 		/// Initializes the state with the given state machine.
 		/// </summary>
 		/// <param name="stateMachine">The state machine that owns this state.</param>
-		public virtual void Init(IStateMachine stateMachine)
+		public virtual async UTask Init(IStateMachine stateMachine)
 		{
 			this.StateMachine = stateMachine;
 		}
@@ -26,27 +29,41 @@ namespace THEBADDEST
 		/// <summary>
 		/// Executes the state. Checks for executable transitions based on conditions and triggers state transitions.
 		/// </summary>
-		public virtual void Execute()
+		public virtual async UTask Execute()
 		{
-			
+			if (Paused) return;
 		}
 
 		/// <summary>
 		/// Called when entering the state.
 		/// </summary>
-		public virtual IEnumerator Enter()
+		public virtual async UTask Enter()
 		{
 			gameObject.SetActive(true);
-			yield break;
 		}
 
 		/// <summary>
 		/// Called when exiting the state.
 		/// </summary>
-		public virtual IEnumerator Exit()
+		public virtual async UTask Exit()
 		{
 			gameObject.SetActive(false);
-			yield break;
+		}
+
+		/// <summary>
+		/// Pauses the state execution.
+		/// </summary>
+		public virtual async UTask Pause()
+		{
+			Paused = true;
+		}
+
+		/// <summary>
+		/// Resumes the state execution.
+		/// </summary>
+		public virtual async UTask Resume()
+		{
+			Paused = false;
 		}
 
 	}
