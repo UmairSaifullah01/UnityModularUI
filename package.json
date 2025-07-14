@@ -25,7 +25,7 @@
 	},
 	"dependencies": {
 		"com.thebaddest.databasemodule": "https://github.com/UmairSaifullah01/Database.git#1.0.0",
-		"com.thebaddest.utask": "https://github.com/UmairSaifullah01/UTask.git"
+		"com.thebaddest.utask": "https://github.com/UmairSaifullah01/UTask.git#1.0.0"
 	}
 }
 			
