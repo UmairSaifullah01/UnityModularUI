@@ -1,0 +1,18 @@
+{
+    "name": "THEBADDEST.UnityModularUI.Edior",
+    "rootNamespace": "",
+    "references": [
+        "GUID:72444cf4e12514c3880871af088178c5"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
