@@ -1,6 +1,8 @@
+using System;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using THEBADDEST.UI;
+
 
 namespace THEBADDEST.UI
 {
@@ -10,7 +12,7 @@ namespace THEBADDEST.UI
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
-
+            
             float y = position.y;
             float lineHeight = EditorGUIUtility.singleLineHeight;
             float spacing = EditorGUIUtility.standardVerticalSpacing;
@@ -48,8 +50,8 @@ namespace THEBADDEST.UI
             rect = new Rect(position.x, y, width, lineHeight);
             if (GUI.Button(rect, "Run"))
             {
-                object targetObj = fieldInfo.GetValue(property.serializedObject.targetObject);
-                if (targetObj is UITransition transition)
+                object targetObject = GetTargetObjectOfProperty(property);
+                if (targetObject is UITransition transition)
                 {
                     transition.Run();
                 }
@@ -64,5 +66,60 @@ namespace THEBADDEST.UI
             // Target State + header + checkboxes + button, each with spacing
             return (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 4;
         }
+        
+        private object GetTargetObjectOfProperty(SerializedProperty prop)
+        {
+            if (prop == null) return null;
+
+            string path = prop.propertyPath.Replace(".Array.data[", "[");
+            object obj = prop.serializedObject.targetObject;
+            string[] elements = path.Split('.');
+
+            foreach (var element in elements)
+            {
+                if (element.Contains("["))
+                {
+                    string elementName = element.Substring(0, element.IndexOf("["));
+                    int index = Convert.ToInt32(
+                        element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", "")
+                    );
+
+                    obj = GetValue_Indexed(obj, elementName, index);
+                }
+                else
+                {
+                    obj = GetValue(obj, element);
+                }
+            }
+            return obj;
+        }
+
+        private object GetValue(object source, string name)
+        {
+            if (source == null) return null;
+            var type = source.GetType();
+
+            var f = type.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            if (f != null) return f.GetValue(source);
+
+            var p = type.GetProperty(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            if (p != null) return p.GetValue(source, null);
+
+            return null;
+        }
+
+        private object GetValue_Indexed(object source, string name, int index)
+        {
+            var enumerable = GetValue(source, name) as System.Collections.IEnumerable;
+            if (enumerable == null) return null;
+            var enm = enumerable.GetEnumerator();
+
+            for (int i = 0; i <= index; i++)
+            {
+                if (!enm.MoveNext()) return null;
+            }
+            return enm.Current;
+        }
+
     }
 } 
