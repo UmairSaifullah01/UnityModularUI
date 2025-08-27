@@ -146,23 +146,7 @@ namespace THEBADDEST
 
 			IsTransiting = false;
 		}
-
-
-		/// <summary>
-		/// Executes the current state or any-state.
-		/// </summary>
-		public void Execute()
-		{
-			if (IsTransiting) return;
-			if (currentAnyState != null)
-			{
-				currentAnyState.Execute();
-			}
-			else if (currentState != null)
-			{
-				currentState.Execute();
-			}
-		}
+		
 
 		/// <summary>
 		/// Exits a specific state.

@@ -34,15 +34,7 @@ namespace THEBADDEST.UI
 			}
 			uiStateFactory= new UIStateFactory(transform, uiCamera);
 		}
-
-		/// <summary>
-		/// Called once per frame.
-		/// Executes the states' logic.
-		/// </summary>
-		private void Update()
-		{
-			Execute();
-		}
+		
 		
 
 		public override IState GetState(string id)

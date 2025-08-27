@@ -27,11 +27,7 @@ namespace THEBADDEST
 		/// Exits any active states that were transitioned with an "AnyTransition".
 		/// </summary>
 		void ExitAnyState();
-
-		/// <summary>
-		/// Executes the logic of the current state.
-		/// </summary>
-		void Execute();
+		
 
 		/// <summary>
 		/// Exits the specified state.

@@ -31,11 +31,7 @@ namespace THEBADDEST
 		/// </summary>
 		/// <param name="stateMachine">The state machine that the state belongs to.</param>
 		UTask Init(IStateMachine stateMachine);
-
-		/// <summary>
-		/// Executes the logic of the state.
-		/// </summary>
-		UTask Execute();
+		
 
 		/// <summary>
 		/// Actions to be performed when entering the state.

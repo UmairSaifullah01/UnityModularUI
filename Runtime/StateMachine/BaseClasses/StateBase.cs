@@ -25,14 +25,7 @@ namespace THEBADDEST
 		{
 			this.StateMachine = stateMachine;
 		}
-
-		/// <summary>
-		/// Executes the state. Checks for executable transitions based on conditions and triggers state transitions.
-		/// </summary>
-		public virtual async UTask Execute()
-		{
-			if (Paused) return;
-		}
+		
 
 		/// <summary>
 		/// Called when entering the state.
