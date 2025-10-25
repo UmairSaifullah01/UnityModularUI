@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using THEBADDEST.Tasks;
-using UnityEngine;
+﻿using THEBADDEST.Tasks;
 
 
 namespace THEBADDEST

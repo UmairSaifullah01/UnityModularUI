@@ -6,7 +6,9 @@ using UnityEngine;
 
 namespace THEBADDEST.UI
 {
-    [CustomPropertyDrawer(typeof(UITransition))]
+
+
+    [CustomPropertyDrawer(typeof(UITransition), true)]
     public class UITransitionDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
