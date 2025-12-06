@@ -15,15 +15,18 @@ namespace THEBADDEST.UI
 
 	public class UIStateFactory : IUIStateFactory
 	{
+		private static readonly string LogTag = "<color=orange>[UI-StateFactory]</color>";
 
 		private readonly Transform _transform;
 		private readonly Camera _uiCamera;
 		ApplicationFlow applicationFlow;
+		private bool enableDebugLogs;
 
-		public UIStateFactory(Transform transform, Camera uiCamera)
+		public UIStateFactory(Transform transform, Camera uiCamera, bool enableDebugLogs = true)
 		{
 			_transform = transform;
 			_uiCamera = uiCamera;
+			this.enableDebugLogs = enableDebugLogs;
 			applicationFlow = DatabaseServiceLocator.DatabaseService().GetTable<ApplicationFlow>();
 		}
 
@@ -32,7 +35,7 @@ namespace THEBADDEST.UI
 			var stateContainer = applicationFlow.GetByKey(x => x.stateName, id);
 			if (stateContainer == null)
 			{
-				Debug.Log($"State container not found for id {id}");
+				DebugLog($"State container not found for id {id}");
 				return null;
 			}
 
@@ -44,7 +47,7 @@ namespace THEBADDEST.UI
 				canvas = stateInstance?.GetComponentInChildren<Canvas>();
 				if (canvas == null)
 				{
-					Debug.Log($"Canvas component not found in state instance with id {id}");
+					DebugLog($"Canvas component not found in state instance with id {id}");
 					return null;
 				}
 			}
@@ -53,12 +56,18 @@ namespace THEBADDEST.UI
 			var state = stateInstance?.GetComponent<UIState>();
 			if (state == null)
 			{
-				Debug.Log($"State component not found in state instance with id {id}");
+				DebugLog($"State component not found in state instance with id {id}");
 				return null;
 			}
 
 			state.uiTransitions = stateContainer.GetTransitions();
 			return state;
+		}
+
+		private void DebugLog(string message)
+		{
+			if (!enableDebugLogs) return;
+			Debug.Log($"{LogTag} {message}");
 		}
 
 	}

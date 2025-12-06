@@ -13,9 +13,16 @@ namespace THEBADDEST.UI
 	/// </summary>
 	public class UIVolume : StateMachineBase
 	{
+		private static readonly string LogTag = "<color=orange>[UI-Volume]</color>";
 
 		[SerializeField] Camera uiCamera;
 		IUIStateFactory uiStateFactory;
+
+		private void DebugLogError(string message)
+		{
+			if (!enableDebugLogs) return;
+			Debug.LogError($"{LogTag} {message}");
+		}
 		/// <summary>
 		/// Called when the script instance is being loaded.
 		/// Initializes the UI volume by caching states and initializing them.
@@ -32,7 +39,7 @@ namespace THEBADDEST.UI
 			{
 				state.Init(this);
 			}
-			uiStateFactory= new UIStateFactory(transform, uiCamera);
+			uiStateFactory= new UIStateFactory(transform, uiCamera, enableDebugLogs);
 		}
 		
 		
@@ -47,11 +54,12 @@ namespace THEBADDEST.UI
 			var state=uiStateFactory.CreateState(id);
 			if (state == null)
 			{
-				Debug.Log($"State component not found in state instance with id {id}");
+				DebugLogError($"State component not found in state instance with id {id}");
+				return null;
 			}
-			state?.Init(this);
-			cachedStates.Add(id,state);
-			return base.GetState(id);
+			state.Init(this);
+			cachedStates.Add(id, state);
+			return state;
 		}
 
 		

@@ -17,17 +17,22 @@ namespace THEBADDEST.UI
      */
 	public abstract class UIState : StateBase, IViewModel
 	{
+		[SerializeField]
+		private bool enableDebugLogs = true;
+
+		private static readonly string LogTag = "<color=orange>[UI-State]</color>";
+
 		// Event triggered when the model data needs to be bound to the view
 		public event Action<string, IModel<object>> ModelBinder
 		{
-			add => viewModel.ModelBinder    += value;
+			add => viewModel.ModelBinder += value;
 			remove => viewModel.ModelBinder -= value;
 		}
 		// Dictionary to store the views associated with the panel
 		public Dictionary<string, IView>            views
 		{
-			get => viewModel.views;
-			set => viewModel.views = value;
+			get => viewModel?.views ?? new Dictionary<string, IView>();
+			set { if (viewModel != null) viewModel.views = value; }
 		}
 
 		public ITransition[] uiTransitions{get; set;}
@@ -35,6 +40,24 @@ namespace THEBADDEST.UI
 		protected ViewModelBase        viewModel;
 
 		protected Dictionary<string, ITransition> transitions;
+
+		private void DebugLog(string message)
+		{
+			if (!enableDebugLogs) return;
+			Debug.Log($"{LogTag} {message}");
+		}
+
+		private void DebugLogError(string message)
+		{
+			if (!enableDebugLogs) return;
+			Debug.LogError($"{LogTag} {message}");
+		}
+
+		private void DebugLogWarning(string message)
+		{
+			if (!enableDebugLogs) return;
+			Debug.LogWarning($"{LogTag} {message}");
+		}
 
 		/**
          * Initializes the panel with the specified state machine.
@@ -44,11 +67,17 @@ namespace THEBADDEST.UI
 		public override async UTask Init(IStateMachine stateMachine)
 		{
 			transitions = new Dictionary<string, ITransition>();
-			foreach (var transition in uiTransitions)
+			if (uiTransitions != null)
 			{
-				transitions.TryAdd(transition.ToState, transition);
+				foreach (var transition in uiTransitions)
+				{
+					if (transition != null)
+					{
+						transitions.TryAdd(transition.ToState, transition);
+					}
+				}
 			}
-			await base.Init(stateMachine);;
+			await base.Init(stateMachine);
 			InitViewModel();
 			gameObject.SetActive(false);
 		}
@@ -70,20 +99,40 @@ namespace THEBADDEST.UI
          */
 		protected void Binder(string id, object value)
 		{
+			if (viewModel == null)
+			{
+				DebugLogError($"Cannot bind '{id}': viewModel is not initialized. Make sure Init() has been called.");
+				return;
+			}
 			viewModel.Binder(id, value);
 		}
 		protected void StringBinder(string id, string value)
 		{
+			if (viewModel == null)
+			{
+				DebugLogError($"Cannot bind '{id}': viewModel is not initialized. Make sure Init() has been called.");
+				return;
+			}
 			viewModel.StringBinder(id, value);
 		}
 
 		protected void FloatBinder(string id, float value)
 		{
+			if (viewModel == null)
+			{
+				DebugLogError($"Cannot bind '{id}': viewModel is not initialized. Make sure Init() has been called.");
+				return;
+			}
 			viewModel.FloatBinder(id, value);
 		}
 
 		protected void EventBinder(string id, Action value)
 		{
+			if (viewModel == null)
+			{
+				DebugLogError($"Cannot bind '{id}': viewModel is not initialized. Make sure Init() has been called.");
+				return;
+			}
 			viewModel.EventBinder(id, value);
 		}
 

@@ -52,7 +52,7 @@ namespace THEBADDEST
 		protected IState currentAnyState;
 
 		[SerializeField]
-		private bool enableDebugLogs = true;
+		protected bool enableDebugLogs = true;
 
 		private static readonly string LogTag = "<color=orange>[UI-StateMachine]</color>";
 		private void DebugLogState(string stateName, string action)
@@ -70,8 +70,14 @@ namespace THEBADDEST
 		{
 			if (cachedStates.TryGetValue(id, out var state))
 				return state;
-			Debug.LogWarning($"State with ID {id} not found.");
+			DebugLogWarning($"State with ID {id} not found.");
 			return null;
+		}
+
+		private void DebugLogWarning(string message)
+		{
+			if (!enableDebugLogs) return;
+			Debug.LogWarning($"{LogTag} {message}");
 		}
 
 		/// <summary>
