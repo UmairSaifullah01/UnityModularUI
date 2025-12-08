@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using THEBADDEST.MVVM;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace THEBADDEST.UI
 		public virtual string     Id        => gameObject.name;
 		public         IViewModel ViewModel { get; set; }
 
+		Action<float> onValueChangedAction;
 		public virtual void Init(IViewModel viewModel)
 		{
 			this.ViewModel             =  viewModel;
@@ -25,6 +27,22 @@ namespace THEBADDEST.UI
 
 		public Transform transformObject => transform;
 
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			onValueChanged.AddListener(OnValueChanged);
+		}
+
+		protected override void OnDisable()
+		{
+			base.OnDisable();
+			onValueChanged.RemoveListener(OnValueChanged);
+		}
+
+		void OnValueChanged(float sliderValue)
+		{
+			onValueChangedAction?.Invoke(sliderValue);
+		}
 		void Bind(string id, IModel<object> model)
 		{
 			if (Id.Equals(id))
@@ -33,8 +51,13 @@ namespace THEBADDEST.UI
 				{
 					value = dataValue;
 				}
+				if (model.Data is Action<float> onValueChangeEvent)
+				{
+					onValueChangedAction = onValueChangeEvent;
+				}
 			}
 		}
+	
 
 	}
 

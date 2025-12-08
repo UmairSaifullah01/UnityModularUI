@@ -17,11 +17,6 @@ namespace THEBADDEST.UI
      */
 	public abstract class UIState : StateBase, IViewModel
 	{
-		[SerializeField]
-		private bool enableDebugLogs = true;
-
-		private static readonly string LogTag = "<color=orange>[UI-State]</color>";
-
 		// Event triggered when the model data needs to be bound to the view
 		public event Action<string, IModel<object>> ModelBinder
 		{
@@ -40,24 +35,6 @@ namespace THEBADDEST.UI
 		protected ViewModelBase        viewModel;
 
 		protected Dictionary<string, ITransition> transitions;
-
-		private void DebugLog(string message)
-		{
-			if (!enableDebugLogs) return;
-			Debug.Log($"{LogTag} {message}");
-		}
-
-		private void DebugLogError(string message)
-		{
-			if (!enableDebugLogs) return;
-			Debug.LogError($"{LogTag} {message}");
-		}
-
-		private void DebugLogWarning(string message)
-		{
-			if (!enableDebugLogs) return;
-			Debug.LogWarning($"{LogTag} {message}");
-		}
 
 		/**
          * Initializes the panel with the specified state machine.
@@ -101,7 +78,6 @@ namespace THEBADDEST.UI
 		{
 			if (viewModel == null)
 			{
-				DebugLogError($"Cannot bind '{id}': viewModel is not initialized. Make sure Init() has been called.");
 				return;
 			}
 			viewModel.Binder(id, value);
@@ -110,7 +86,6 @@ namespace THEBADDEST.UI
 		{
 			if (viewModel == null)
 			{
-				DebugLogError($"Cannot bind '{id}': viewModel is not initialized. Make sure Init() has been called.");
 				return;
 			}
 			viewModel.StringBinder(id, value);
@@ -120,7 +95,6 @@ namespace THEBADDEST.UI
 		{
 			if (viewModel == null)
 			{
-				DebugLogError($"Cannot bind '{id}': viewModel is not initialized. Make sure Init() has been called.");
 				return;
 			}
 			viewModel.FloatBinder(id, value);
@@ -130,7 +104,6 @@ namespace THEBADDEST.UI
 		{
 			if (viewModel == null)
 			{
-				DebugLogError($"Cannot bind '{id}': viewModel is not initialized. Make sure Init() has been called.");
 				return;
 			}
 			viewModel.EventBinder(id, value);
