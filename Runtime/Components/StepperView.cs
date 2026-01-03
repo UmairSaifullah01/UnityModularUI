@@ -42,6 +42,9 @@ namespace THEBADDEST.UI
 
         void OnPlus()
         {
+            if (UIUtils.WaitBetweenClick())
+                return;
+
             value++;
             UpdateValueText();
             OnValueChanged?.Invoke(value);
@@ -49,6 +52,9 @@ namespace THEBADDEST.UI
 
         void OnMinus()
         {
+            if (UIUtils.WaitBetweenClick())
+                return;
+
             value--;
             UpdateValueText();
             OnValueChanged?.Invoke(value);

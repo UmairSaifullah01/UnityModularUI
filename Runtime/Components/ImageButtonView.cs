@@ -15,6 +15,11 @@ namespace THEBADDEST.UI
 		Action onclickEvent;
 		
 
+		public override void Init(IViewModel viewModel)
+		{
+			base.Init(viewModel);
+		}
+
 		protected override void Bind(string id, IModel<object> model)
 		{
 			if (!this.Id.Equals(id)) return;
@@ -39,6 +44,9 @@ namespace THEBADDEST.UI
 
 		private async void OnClickAsync()
 		{
+			if (UIUtils.WaitBetweenClick())
+				return;
+
 			await PlayEffectAsync(transform);
 			onclickEvent?.Invoke();
 		}

@@ -49,6 +49,9 @@ namespace THEBADDEST.UI
 
 		async void PerformClick()
 		{
+			if (UIUtils.WaitBetweenClick())
+				return;
+
 			if (onObject.gameObject.activeSelf)
 			{
 				onObject.gameObject.SetActive(false);

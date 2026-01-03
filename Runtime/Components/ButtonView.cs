@@ -37,6 +37,9 @@ namespace THEBADDEST.UI
 
 		protected virtual async void PerformClick()
 		{
+			if (UIUtils.WaitBetweenClick())
+				return;
+
 			await PlayEffectAsync(transform);
 			onclickEvent?.Invoke();
 		}
