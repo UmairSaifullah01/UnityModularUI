@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace THEBADDEST.UI
 {
-    public class TabView : ViewBase
+    public class TabView : UIView
     {
         [SerializeField] private List<Button> tabButtons;
         public virtual string Id => gameObject.name;

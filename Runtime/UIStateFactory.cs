@@ -15,8 +15,6 @@ namespace THEBADDEST.UI
 
 	public class UIStateFactory : IUIStateFactory
 	{
-		private static readonly string LogTag = "<color=orange>[UI-StateFactory]</color>";
-
 		private readonly Transform _transform;
 		private readonly Camera _uiCamera;
 		ApplicationFlow applicationFlow;
@@ -35,7 +33,7 @@ namespace THEBADDEST.UI
 			var stateContainer = applicationFlow.GetByKey(x => x.stateName, id);
 			if (stateContainer == null)
 			{
-				DebugLog($"State container not found for id {id}");
+				UILog.Log($"State container not found for id {id}");
 				return null;
 			}
 
@@ -47,7 +45,7 @@ namespace THEBADDEST.UI
 				canvas = stateInstance?.GetComponentInChildren<Canvas>();
 				if (canvas == null)
 				{
-					DebugLog($"Canvas component not found in state instance with id {id}");
+					UILog.Log($"Canvas component not found in state instance with id {id}");
 					return null;
 				}
 			}
@@ -56,18 +54,12 @@ namespace THEBADDEST.UI
 			var state = stateInstance?.GetComponent<UIState>();
 			if (state == null)
 			{
-				DebugLog($"State component not found in state instance with id {id}");
+				UILog.Log($"State component not found in state instance with id {id}");
 				return null;
 			}
 
 			state.uiTransitions = stateContainer.GetTransitions();
 			return state;
-		}
-
-		private void DebugLog(string message)
-		{
-			if (!enableDebugLogs) return;
-			Debug.Log($"{LogTag} {message}");
 		}
 
 	}

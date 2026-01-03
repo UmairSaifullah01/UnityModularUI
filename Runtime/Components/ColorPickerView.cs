@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace THEBADDEST.UI
 {
-    public class ColorPickerView : ViewBase
+    public class ColorPickerView : UIView
     {
         [SerializeField] private Image colorPreview;
         public virtual string Id => gameObject.name;

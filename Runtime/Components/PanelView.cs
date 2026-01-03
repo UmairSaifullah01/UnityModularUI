@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace THEBADDEST.UI
 {
-    public class PanelView : ViewBase
+    public class PanelView : UIView
     {
         [SerializeField] private Animator animator;
         [SerializeField] private string openTrigger = "Open";

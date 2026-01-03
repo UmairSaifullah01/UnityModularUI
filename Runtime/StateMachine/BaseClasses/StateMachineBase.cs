@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using THEBADDEST.UI;
 using UnityEngine;
 
 
@@ -54,13 +55,6 @@ namespace THEBADDEST
 		[SerializeField]
 		protected bool enableDebugLogs = true;
 
-		private static readonly string LogTag = "<color=orange>[UI-StateMachine]</color>";
-		private void DebugLogState(string stateName, string action)
-		{
-			if (!enableDebugLogs) return;
-			Debug.Log($"{LogTag} Current State : {stateName} - {action}.");
-		}
-
 		/// <summary>
 		/// Retrieves a state from the cached states dictionary based on its ID.
 		/// </summary>
@@ -70,14 +64,8 @@ namespace THEBADDEST
 		{
 			if (cachedStates.TryGetValue(id, out var state))
 				return state;
-			DebugLogWarning($"State with ID {id} not found.");
+			UILog.LogWarning($"State with ID {id} not found.");
 			return null;
-		}
-
-		private void DebugLogWarning(string message)
-		{
-			if (!enableDebugLogs) return;
-			Debug.LogWarning($"{LogTag} {message}");
 		}
 
 		/// <summary>
@@ -111,7 +99,7 @@ namespace THEBADDEST
 				if (currentState != null)
 				{
 					await currentState.Exit();
-					DebugLogState(currentState.StateName, "Exit");
+					UILog.Log($"Current State : {currentState.StateName} - Exit.");
 				}
 				previousState = currentState;
 				currentState = null;
@@ -124,7 +112,7 @@ namespace THEBADDEST
 				if (currentState != null && !currentState.Paused)
 				{
 					await currentState.Pause();
-					DebugLogState(currentState.StateName, "Paused");
+					UILog.Log($"Current State : {currentState.StateName} - Paused.");
 				}
 				currentAnyState = GetState(transition.ToState);
 				if (currentAnyState is MonoBehaviour mbState && mbState != null)
@@ -136,7 +124,7 @@ namespace THEBADDEST
 
 					currentStateName = currentAnyState.StateName;
 					await currentAnyState.Enter();
-					DebugLogState(currentAnyState.StateName, "Entered");
+					UILog.Log($"Current State : {currentAnyState.StateName} - Entered.");
 				}
 			}
 			else
@@ -146,7 +134,7 @@ namespace THEBADDEST
 				{
 					currentStateName = currentState.StateName;
 					await currentState.Enter();
-					DebugLogState(currentState.StateName, "Entered");
+					UILog.Log($"Current State : {currentState.StateName} - Entered.");
 				}
 			}
 
@@ -187,7 +175,7 @@ namespace THEBADDEST
 				if (previousAnyState is MonoBehaviour mbState && mbState != null)
 				{
 					await previousAnyState.Exit();
-					DebugLogState(previousAnyState.StateName, "Exit");
+					UILog.Log($"Current State : {previousAnyState.StateName} - Exit.");
 				}
 			}
 
@@ -204,7 +192,7 @@ namespace THEBADDEST
 						}
 						currentStateName = currentAnyState.StateName;
 						await currentAnyState.Enter();
-						DebugLogState(currentAnyState.StateName, "Entered");
+						UILog.Log($"Current State : {currentAnyState.StateName} - Entered.");
 						return;
 					}
 				}
@@ -217,7 +205,7 @@ namespace THEBADDEST
 				if (currentState != null && currentState.Paused)
 				{
 					await currentState.Resume();
-					DebugLogState(currentState.StateName, "Resumed");
+					UILog.Log($"Current State : {currentState.StateName} - Resumed.");
 				}
 			}
 		}

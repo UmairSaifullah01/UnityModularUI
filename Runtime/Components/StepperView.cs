@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace THEBADDEST.UI
 {
-    public class StepperView : ViewBase
+    public class StepperView : UIView
     {
         [SerializeField] private Button plusButton;
         [SerializeField] private Button minusButton;

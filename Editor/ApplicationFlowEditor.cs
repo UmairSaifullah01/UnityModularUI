@@ -5,7 +5,7 @@ using Object = System.Object;
 namespace THEBADDEST.UI
 {
     [CustomEditor(typeof(ApplicationFlow))]
-    public class ApplicationFlowEditor : Editor
+    public class ApplicationFlowEditor : UnityEditor.Editor
     {
         private SerializedProperty entriesProperty;
         private int selectedIndex = 0;

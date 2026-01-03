@@ -8,6 +8,19 @@ namespace THEBADDEST.UI
     public class IconView : Image, IView
     {
         [SerializeField] private List<Sprite> iconSet;
+        [SerializeField, HideInInspector] protected RectTransform cachedRectTransform;
+        /// <summary>
+        /// Retrieves the transform component of the view.
+        /// </summary>
+        public RectTransform rectTransformObject
+        {
+            get
+            {
+                if (cachedRectTransform == null) cachedRectTransform = GetComponent<RectTransform>();
+                return cachedRectTransform;
+            }
+        }
+
         public virtual string Id => gameObject.name;
         public IViewModel ViewModel { get; set; }
 

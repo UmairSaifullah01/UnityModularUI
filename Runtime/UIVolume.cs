@@ -13,16 +13,10 @@ namespace THEBADDEST.UI
 	/// </summary>
 	public class UIVolume : StateMachineBase
 	{
-		private static readonly string LogTag = "<color=orange>[UI-Volume]</color>";
-
 		[SerializeField] Camera uiCamera;
+		[SerializeField] ToasterService toasterService;
 		IUIStateFactory uiStateFactory;
 
-		private void DebugLogError(string message)
-		{
-			if (!enableDebugLogs) return;
-			Debug.LogError($"{LogTag} {message}");
-		}
 		/// <summary>
 		/// Called when the script instance is being loaded.
 		/// Initializes the UI volume by caching states and initializing them.
@@ -30,6 +24,7 @@ namespace THEBADDEST.UI
 		private void Awake()
 		{
 			gameObject.name = nameof(UIVolume);
+			UILog.SetEnabled(enableDebugLogs);
 			var states = GetComponentsInChildren<IState>(true);
 			foreach (var state in states)
 			{
@@ -40,6 +35,12 @@ namespace THEBADDEST.UI
 				state.Init(this);
 			}
 			uiStateFactory= new UIStateFactory(transform, uiCamera, enableDebugLogs);
+			
+			// Initialize ToasterService if provided
+			if (toasterService != null)
+			{
+				toasterService.Initialize(uiCamera);
+			}
 		}
 		
 		
@@ -54,7 +55,7 @@ namespace THEBADDEST.UI
 			var state=uiStateFactory.CreateState(id);
 			if (state == null)
 			{
-				DebugLogError($"State component not found in state instance with id {id}");
+				UILog.LogError($"State component not found in state instance with id {id}");
 				return null;
 			}
 			state.Init(this);

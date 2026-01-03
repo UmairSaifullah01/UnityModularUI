@@ -7,6 +7,19 @@ namespace THEBADDEST.UI
 {
     public class InputFieldView : TMP_InputField, IView
     {
+        [SerializeField, HideInInspector] protected RectTransform cachedRectTransform;
+        /// <summary>
+        /// Retrieves the transform component of the view.
+        /// </summary>
+        public RectTransform rectTransformObject
+        {
+            get
+            {
+                if (cachedRectTransform == null) cachedRectTransform = GetComponent<RectTransform>();
+                return cachedRectTransform;
+            }
+        }
+
         public virtual string Id => gameObject.name;
         public IViewModel ViewModel { get; set; }
         private Action<string> onValueChangedAction;

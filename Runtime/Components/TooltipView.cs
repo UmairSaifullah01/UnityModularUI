@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace THEBADDEST.UI
 {
-    public class TooltipView : ViewBase
+    public class TooltipView : UIView
     {
         [SerializeField] private Text tooltipText;
         [SerializeField] private GameObject tooltipPanel;

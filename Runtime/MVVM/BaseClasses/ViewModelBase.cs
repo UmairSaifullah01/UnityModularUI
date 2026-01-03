@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using THEBADDEST.UI;
 using UnityEngine;
 
 
@@ -26,9 +27,39 @@ namespace THEBADDEST.MVVM
 			{
 				var v = gameObject.GetComponentsInChildren<IView>(true);
 				views = new Dictionary<string, IView>();
+				
+				// Check for duplicate IDs and log them
+				var idGroups = new Dictionary<string, List<IView>>();
 				foreach (IView view in v)
 				{
-					views.Add(view.Id, view);
+					if (!idGroups.ContainsKey(view.Id))
+					{
+						idGroups[view.Id] = new List<IView>();
+					}
+					idGroups[view.Id].Add(view);
+				}
+				
+				// Log duplicates if found
+				foreach (var group in idGroups)
+				{
+					if (group.Value.Count > 1)
+					{
+						var viewNames = new List<string>();
+						foreach (var view in group.Value)
+						{
+							viewNames.Add(view.transformObject.gameObject.name);
+						}
+						UILog.LogWarning($"Duplicate view IDs detected! ID: '{group.Key}' is used by {group.Value.Count} views: {string.Join(", ", viewNames)}");
+					}
+				}
+				
+				// Add views to dictionary (only first occurrence of each ID will be added)
+				foreach (IView view in v)
+				{
+					if (!views.ContainsKey(view.Id))
+					{
+						views.TryAdd(view.Id, view);
+					}
 				}
 			}
 

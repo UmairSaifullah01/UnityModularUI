@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace THEBADDEST.UI
 {
-    public class ProgressBarView : ViewBase
+    public class ProgressBarView : UIView
     {
         [SerializeField] private Image fillImage;
         private RectTransform fillRect;

@@ -9,7 +9,7 @@ namespace THEBADDEST.UI
 {
 
 
-	public class ButtonView : ViewBase, IPointerClickHandler
+	public class ButtonView : UIView, IPointerClickHandler
 	{
 
 		protected Action onclickEvent;

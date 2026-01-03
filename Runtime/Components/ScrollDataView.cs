@@ -12,6 +12,19 @@ namespace THEBADDEST.UI
         [SerializeField] private GameObject itemPrefab;
         [SerializeField] private Transform contentRoot;
         private List<GameObject> items = new List<GameObject>();
+        [SerializeField, HideInInspector] protected RectTransform cachedRectTransform;
+        /// <summary>
+        /// Retrieves the transform component of the view.
+        /// </summary>
+        public RectTransform rectTransformObject
+        {
+            get
+            {
+                if (cachedRectTransform == null) cachedRectTransform = GetComponent<RectTransform>();
+                return cachedRectTransform;
+            }
+        }
+
         public virtual string Id => gameObject.name;
         public IViewModel ViewModel { get; set; }
 

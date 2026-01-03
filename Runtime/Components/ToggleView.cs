@@ -9,7 +9,7 @@ namespace THEBADDEST.UI
 {
 
 
-	public class ToggleView : ViewBase, IPointerClickHandler
+	public class ToggleView : UIView, IPointerClickHandler
 	{
 		[SerializeField]  Transform onObject;
 		[SerializeField]           Transform offObject;
