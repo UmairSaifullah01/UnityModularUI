@@ -29,29 +29,7 @@ namespace THEBADDEST.MVVM
 				views = new Dictionary<string, IView>();
 				
 				// Check for duplicate IDs and log them
-				var idGroups = new Dictionary<string, List<IView>>();
-				foreach (IView view in v)
-				{
-					if (!idGroups.ContainsKey(view.Id))
-					{
-						idGroups[view.Id] = new List<IView>();
-					}
-					idGroups[view.Id].Add(view);
-				}
-				
-				// Log duplicates if found
-				foreach (var group in idGroups)
-				{
-					if (group.Value.Count > 1)
-					{
-						var viewNames = new List<string>();
-						foreach (var view in group.Value)
-						{
-							viewNames.Add(view.transformObject.gameObject.name);
-						}
-						UILog.LogWarning($"Duplicate view IDs detected! ID: '{group.Key}' is used by {group.Value.Count} views: {string.Join(", ", viewNames)}");
-					}
-				}
+				CheckForDuplicates(v);
 				
 				// Add views to dictionary (only first occurrence of each ID will be added)
 				foreach (IView view in v)
@@ -90,6 +68,37 @@ namespace THEBADDEST.MVVM
 		{
 			model = new ModelBase(value);
 			ModelBinder?.Invoke(id, model);
+		}
+
+		/// <summary>
+		/// Checks for duplicate view IDs and logs warnings if any are found.
+		/// </summary>
+		/// <param name="views">Array of views to check for duplicates.</param>
+		protected virtual void CheckForDuplicates(IView[] views)
+		{
+			var idGroups = new Dictionary<string, List<IView>>();
+			foreach (IView view in views)
+			{
+				if (!idGroups.ContainsKey(view.Id))
+				{
+					idGroups[view.Id] = new List<IView>();
+				}
+				idGroups[view.Id].Add(view);
+			}
+			
+			// Log duplicates if found
+			foreach (var group in idGroups)
+			{
+				if (group.Value.Count > 1)
+				{
+					var viewNames = new List<string>();
+					foreach (var view in group.Value)
+					{
+						viewNames.Add(view.transformObject.gameObject.name);
+					}
+					UILog.LogWarning($"Duplicate view IDs detected! ID: '{group.Key}' is used by {group.Value.Count} views: {string.Join(", ", viewNames)}");
+				}
+			}
 		}
 	}
 
