@@ -34,6 +34,9 @@ namespace THEBADDEST.UI
 
         void OnTabClicked(int idx)
         {
+            if (UIUtils.WaitBetweenClick())
+                return;
+
             SelectTab(idx);
             // Optionally, notify ViewModel or raise event
         }

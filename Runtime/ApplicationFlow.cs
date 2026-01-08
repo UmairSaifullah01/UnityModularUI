@@ -6,6 +6,10 @@ namespace THEBADDEST.UI
 {
     public class ApplicationFlow : Table<UIStateRecord>
     {
+        [SerializeField] private string bootStateName = "";
+        
+        public string BootStateName => bootStateName;
+        
         public ApplicationFlow() : base()
         {
         }

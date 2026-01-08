@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d08941108f1071049a4b6d761f29e539, type: 3}
   m_Name: ToasterService
   m_EditorClassIdentifier: 
-  toasterCanvasPrefab: {fileID: 0}
+  toasterCanvasPrefab: {fileID: 8475685958565185722, guid: 190326253d463eb458859c56e06a0992, type: 3}
   defaultDisplayDuration: 2
   animationDuration: 0.5
-  showEasing: 4
-  hideEasing: 1
   messageViewId: MessageText
   innerPopupViewId: InnerPopup
