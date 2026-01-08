@@ -10,24 +10,24 @@ namespace THEBADDEST.UI
 	/// </summary>
 	public class ToasterUI : ViewModelMono
 	{
-		[SerializeField] private Canvas canvas;
+		[SerializeField] protected Canvas canvas;
 		
 		/// <summary>
 		/// Camera to use for the canvas. Set this before calling InitViewModel().
 		/// </summary>
-		public Camera UICamera { get; set; }
+		public virtual Camera UICamera { get; set; }
 		
 		/// <summary>
 		/// Duration for show animation in seconds.
 		/// </summary>
-		public float AnimationDuration { get; set; } = 0.5f;
+		public virtual float AnimationDuration { get; set; } = 0.5f;
 		
 		/// <summary>
 		/// View ID for the inner popup element that will be animated.
 		/// </summary>
-		public string InnerPopupViewId { get; set; } = "InnerPopup";
+		public virtual string InnerPopupViewId { get; set; } = "InnerPopup";
 		
-		private Coroutine animationCoroutine;
+		protected Coroutine animationCoroutine;
 
 		/// <summary>
 		/// Initializes the ViewModel and sets up the canvas camera.

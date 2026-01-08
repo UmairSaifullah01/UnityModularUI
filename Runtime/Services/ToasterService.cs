@@ -11,26 +11,26 @@ namespace THEBADDEST.UI
 	[CreateAssetMenu(fileName = "ToasterService", menuName = "THEBADDEST/UI/Toaster Service")]
 	public class ToasterService : ScriptableObject
 	{
-		[SerializeField] private ToasterUI toasterCanvasPrefab;
-		[SerializeField] private float defaultDisplayDuration = 2f;
-		[SerializeField] private float animationDuration = 0.5f;
-		[SerializeField] private string messageViewId = "MessageText";
-		[SerializeField] private string innerPopupViewId = "InnerPopup";
+		[SerializeField] protected ToasterUI toasterCanvasPrefab;
+		[SerializeField] protected float defaultDisplayDuration = 2f;
+		[SerializeField] protected float animationDuration = 0.5f;
+		[SerializeField] protected string messageViewId = "MessageText";
+		[SerializeField] protected string innerPopupViewId = "InnerPopup";
 
-		private ToasterUI toasterInstance;
-		private Coroutine hideCoroutine;
-		private bool isInitialized;
+		protected ToasterUI toasterInstance;
+		protected Coroutine hideCoroutine;
+		protected bool isInitialized;
 
 		/// <summary>
 		/// Gets whether the service is initialized.
 		/// </summary>
-		public bool IsInitialized => isInitialized;
+		public virtual bool IsInitialized => isInitialized;
 
 		/// <summary>
 		/// Initializes the toaster service.
 		/// </summary>
 		/// <param name="uiCamera">Optional camera for the toaster canvas.</param>
-		public void Initialize(Camera uiCamera = null)
+		public virtual void Initialize(Camera uiCamera = null)
 		{
 			if (toasterCanvasPrefab == null)
 			{
@@ -64,7 +64,7 @@ namespace THEBADDEST.UI
 		/// </summary>
 		/// <param name="message">The message to display.</param>
 		/// <param name="duration">How long to display the message (uses default if not specified).</param>
-		public void Show(string message, float? duration = null)
+		public virtual void Show(string message, float? duration = null)
 		{
 			if (!isInitialized || toasterInstance == null)
 			{
@@ -90,7 +90,7 @@ namespace THEBADDEST.UI
 		/// <summary>
 		/// Hides the toast notification.
 		/// </summary>
-		public void Hide()
+		public virtual void Hide()
 		{
 			if (toasterInstance == null) return;
 
@@ -106,7 +106,7 @@ namespace THEBADDEST.UI
 		/// <summary>
 		/// Coroutine to hide the toast after a delay.
 		/// </summary>
-		private IEnumerator HideAfterDelay(float delay)
+		protected virtual IEnumerator HideAfterDelay(float delay)
 		{
 			yield return new WaitForSeconds(delay);
 			Hide();

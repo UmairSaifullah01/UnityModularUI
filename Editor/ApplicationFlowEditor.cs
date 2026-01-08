@@ -26,6 +26,12 @@ namespace THEBADDEST.UI
         Vector2 graphScrollPosition;
         TransitionViewMode viewMode = TransitionViewMode.ListView;
         
+        // Performance caching
+        private static List<string> cachedAllStateTypes = null;
+        private string[] cachedAvailableStateNames = null;
+        private int cachedEntriesCount = -1;
+        private GUIStyle toggleButtonStyle = null;
+        
         // Graph view properties
         private Dictionary<string, Rect> nodePositions = new Dictionary<string, Rect>();
         private HashSet<string> drawnConnections = new HashSet<string>();
@@ -47,6 +53,9 @@ namespace THEBADDEST.UI
             bootStateNameProperty = serializedObject.FindProperty("bootStateName");
             graphScrollPosition = Vector2.zero;
             drawnConnections.Clear();
+            // Invalidate cache when editor is enabled
+            cachedAvailableStateNames = null;
+            cachedEntriesCount = -1;
         }
 
         public override void OnInspectorGUI()
@@ -66,10 +75,13 @@ namespace THEBADDEST.UI
             EditorGUILayout.LabelField("View Mode", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
             
-            // Enhanced toggle buttons with better styling
-            GUIStyle toggleStyle = new GUIStyle(GUI.skin.button);
-            toggleStyle.padding = new RectOffset(10, 10, 8, 8);
-            toggleStyle.fontSize = 11;
+            // Enhanced toggle buttons with better styling (cached)
+            if (toggleButtonStyle == null)
+            {
+                toggleButtonStyle = new GUIStyle(GUI.skin.button);
+                toggleButtonStyle.padding = new RectOffset(10, 10, 8, 8);
+                toggleButtonStyle.fontSize = 11;
+            }
             
             Color originalBgColor = GUI.backgroundColor;
             Color originalContentColor = GUI.contentColor;
@@ -86,7 +98,7 @@ namespace THEBADDEST.UI
                 GUI.contentColor = new Color(0.8f, 0.8f, 0.8f);
             }
             
-            if (GUILayout.Button("📋 List View", toggleStyle, GUILayout.Height(30)))
+            if (GUILayout.Button("📋 List View", toggleButtonStyle, GUILayout.Height(30)))
             {
                 viewMode = TransitionViewMode.ListView;
             }
@@ -103,7 +115,7 @@ namespace THEBADDEST.UI
                 GUI.contentColor = new Color(0.8f, 0.8f, 0.8f);
             }
             
-            if (GUILayout.Button("🔗 Graph View", toggleStyle, GUILayout.Height(30)))
+            if (GUILayout.Button("🔗 Graph View", toggleButtonStyle, GUILayout.Height(30)))
             {
                 viewMode = TransitionViewMode.GraphView;
             }
@@ -154,6 +166,7 @@ namespace THEBADDEST.UI
                         stateNames = null;
                         selectedIndex = entriesProperty.arraySize - 1;
                         selectedStateToAddIndex = 0; // Reset to first item after adding
+                        cachedAvailableStateNames = null; // Invalidate cache
                     }
                     GUI.backgroundColor = Color.white;
                     
@@ -279,6 +292,7 @@ namespace THEBADDEST.UI
                     stateNames = null;
                     selectedIndex = newIndex;
                     selectedStateToAddIndex = 0; // Reset to first item after adding
+                    cachedAvailableStateNames = null; // Invalidate cache
                 }
                 GUI.backgroundColor = Color.white;
                 
@@ -314,14 +328,26 @@ namespace THEBADDEST.UI
 
         private string[] GetAvailableStateNames()
         {
-            // Get all types that implement IState
-            var stateTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.IsDynamic)
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(THEBADDEST.IState).IsAssignableFrom(t))
-                .Select(t => t.Name)
-                .OrderBy(name => name)
-                .ToList();
+            // Check if we need to recalculate
+            int currentEntriesCount = entriesProperty != null ? entriesProperty.arraySize : 0;
+            bool needsRecalculation = cachedAvailableStateNames == null || cachedEntriesCount != currentEntriesCount;
+            
+            if (!needsRecalculation)
+            {
+                return cachedAvailableStateNames;
+            }
+            
+            // Cache all state types (static - only calculated once, shared across all instances)
+            if (cachedAllStateTypes == null)
+            {
+                cachedAllStateTypes = AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => !a.IsDynamic)
+                    .SelectMany(a => a.GetTypes())
+                    .Where(t => t.IsClass && !t.IsAbstract && typeof(THEBADDEST.IState).IsAssignableFrom(t))
+                    .Select(t => t.Name)
+                    .OrderBy(name => name)
+                    .ToList();
+            }
 
             // Get currently used state names
             HashSet<string> usedStateNames = new HashSet<string>();
@@ -338,8 +364,11 @@ namespace THEBADDEST.UI
                 }
             }
 
-            // Filter out already used state names
-            return stateTypes.Where(name => !usedStateNames.Contains(name)).ToArray();
+            // Filter out already used state names and cache result
+            cachedAvailableStateNames = cachedAllStateTypes.Where(name => !usedStateNames.Contains(name)).ToArray();
+            cachedEntriesCount = currentEntriesCount;
+            
+            return cachedAvailableStateNames;
         }
 
         private void DrawAllStatesListView()
@@ -405,6 +434,7 @@ namespace THEBADDEST.UI
                             selectedIndex = Mathf.Clamp(selectedIndex, 0, entriesProperty.arraySize - 1);
                         
                         stateNames = null;
+                        cachedAvailableStateNames = null; // Invalidate cache
                         serializedObject.ApplyModifiedProperties();
                         EditorGUILayout.EndHorizontal();
                         EditorGUILayout.EndVertical();
