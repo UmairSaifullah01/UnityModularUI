@@ -34,16 +34,6 @@ namespace THEBADDEST.UI
 		/// </summary>
 		public override void InitViewModel()
 		{
-			if (canvas == null)
-			{
-				canvas = GetComponent<Canvas>();
-				if (canvas == null)
-				{
-					canvas = gameObject.AddComponent<Canvas>();
-					canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-				}
-			}
-			
 			if (UICamera != null)
 			{
 				canvas.renderMode = RenderMode.ScreenSpaceCamera;
@@ -58,14 +48,10 @@ namespace THEBADDEST.UI
 		/// </summary>
 		public virtual void PlayShowAnimation()
 		{
-			if (!views.ContainsKey(InnerPopupViewId))
+			if (!views.TryGetValue(InnerPopupViewId, out IView innerPopup))
 			{
 				return;
 			}
-
-			var innerPopup = views[InnerPopupViewId];
-			if (innerPopup == null) return;
-
 			innerPopup.transformObject.localScale = Vector3.zero;
 			
 			if (animationCoroutine != null)
@@ -81,19 +67,11 @@ namespace THEBADDEST.UI
 		/// </summary>
 		public virtual void PlayHideAnimation()
 		{
-			if (!views.ContainsKey(InnerPopupViewId))
+			if (!views.TryGetValue(InnerPopupViewId, out IView innerPopup))
 			{
-				gameObject.SetActive(false);
 				return;
 			}
-
-			var innerPopup = views[InnerPopupViewId];
-			if (innerPopup == null)
-			{
-				gameObject.SetActive(false);
-				return;
-			}
-
+			
 			if (animationCoroutine != null)
 			{
 				StopCoroutine(animationCoroutine);
@@ -153,7 +131,6 @@ namespace THEBADDEST.UI
 			}
 			
 			target.localScale = end;
-			gameObject.SetActive(false);
 		}
 
 		/// <summary>
