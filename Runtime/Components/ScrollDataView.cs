@@ -12,6 +12,7 @@ namespace THEBADDEST.UI
         [SerializeField] private GameObject itemPrefab;
         [SerializeField] private Transform contentRoot;
         private List<GameObject> items = new List<GameObject>();
+        private Stack<GameObject> pool = new Stack<GameObject>();
         [SerializeField, HideInInspector] protected RectTransform cachedRectTransform;
         /// <summary>
         /// Retrieves the transform component of the view.
@@ -46,12 +47,27 @@ namespace THEBADDEST.UI
         {
             if (Id.Equals(id) && model.Data is ScrollData scrollData && scrollData.Data != null)
             {
+               
                 foreach (var item in items)
-                    Destroy(item);
+                {
+                    item.SetActive(false);
+                    pool.Push(item);
+                }
                 items.Clear();
+                
                 foreach (var goData in scrollData.Data)
                 {
-                    var go = Instantiate(scrollData.Prefab != null ? scrollData.Prefab : itemPrefab, contentRoot);
+                    GameObject go;
+                    if (pool.Count > 0)
+                    {
+                        go = pool.Pop();
+                        go.SetActive(true);
+                    }
+                    else
+                    {
+                        go = Instantiate(scrollData.Prefab != null ? scrollData.Prefab : itemPrefab, contentRoot);
+                    }
+                    
                     if (scrollData.OnItemSetup != null)
                         scrollData.OnItemSetup.Invoke(go);
                     items.Add(go);

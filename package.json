@@ -1,5 +1,5 @@
 {
-	"name": "com.thebaddest.unitymodulerui",
+	"name": "com.thebaddest.unitymodularui",
 	"version": "1.1.0",
 	"displayName": "UnityModulerUI",
 	"description": "A short description of your package.",
@@ -15,8 +15,7 @@
 			"description": "A Sample in which a character patrol and find target",
 			"path": "Samples~"
 		}
-	]
-	,
+	],
 	"documentationUrl": "https://github.com/UmairSaifullah01/UnityModularUI",
 	"repository": {
 		"url": "https://github.com/UmairSaifullah01/UnityModularUI.git",
@@ -27,4 +26,3 @@
 		"com.thebaddest.databasemodule": "https://github.com/UmairSaifullah01/Database.git#1.0.0"
 	}
 }
-			

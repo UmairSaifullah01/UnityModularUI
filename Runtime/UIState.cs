@@ -74,7 +74,7 @@ namespace THEBADDEST.UI
          * @param id The ID of the model to bind.
          * @param value The value to bind to the model.
          */
-		protected void Binder(string id, object value)
+		public void Binder<T>(string id, T value)
 		{
 			if (viewModel == null)
 			{
@@ -82,31 +82,24 @@ namespace THEBADDEST.UI
 			}
 			viewModel.Binder(id, value);
 		}
+
+		protected void Binder(string id, object value)
+		{
+			Binder<object>(id, value);
+		}
 		protected void StringBinder(string id, string value)
 		{
-			if (viewModel == null)
-			{
-				return;
-			}
-			viewModel.StringBinder(id, value);
+			Binder<string>(id, value);
 		}
 
 		protected void FloatBinder(string id, float value)
 		{
-			if (viewModel == null)
-			{
-				return;
-			}
-			viewModel.FloatBinder(id, value);
+			Binder<float>(id, value);
 		}
 
 		protected void EventBinder(string id, Action value)
 		{
-			if (viewModel == null)
-			{
-				return;
-			}
-			viewModel.EventBinder(id, value);
+			Binder<Action>(id, value);
 		}
 
 		protected void GoToState(string state)

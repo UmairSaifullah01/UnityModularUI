@@ -47,27 +47,29 @@ namespace THEBADDEST.MVVM
 			}
 		}
 
+		public void Binder<T>(string id, T value)
+		{
+			model = new ModelBase(value);
+			ModelBinder?.Invoke(id, model);
+		}
+
 		public void Binder(string id, object value)
 		{
-			 model = new ModelBase(value);
-			ModelBinder?.Invoke(id, model);
+			Binder<object>(id, value);
 		}
 		public void StringBinder(string id, string value)
 		{
-			 model = new ModelBase(value);
-			ModelBinder?.Invoke(id, model);
+			Binder<string>(id, value);
 		}
 
 		public void FloatBinder(string id, float value)
 		{
-			 model = new ModelBase(value);
-			ModelBinder?.Invoke(id, model);
+			Binder<float>(id, value);
 		}
 
 		public void EventBinder(string id, Action value)
 		{
-			model = new ModelBase(value);
-			ModelBinder?.Invoke(id, model);
+			Binder<Action>(id, value);
 		}
 
 		/// <summary>
