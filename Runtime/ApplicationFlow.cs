@@ -39,6 +39,8 @@ namespace THEBADDEST.UI
 
         public ITransition[] GetTransitions()
         {
+            if (transitions == null)
+                return System.Array.Empty<ITransition>();
             ITransition[] transitionsArray = new ITransition[transitions.Length];
             for (int i = 0; i < transitions.Length; i++)
             {

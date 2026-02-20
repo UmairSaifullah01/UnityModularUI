@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,9 +51,6 @@ namespace THEBADDEST
 		/// The current any-state of the state machine.
 		/// </summary>
 		protected IState currentAnyState;
-
-		[SerializeField]
-		protected bool enableDebugLogs = true;
 
 		/// <summary>
 		/// Retrieves a state from the cached states dictionary based on its ID.
@@ -109,11 +106,18 @@ namespace THEBADDEST
 			if (transition.IsAnyState)
 			{
 				// Pause the current state when entering an any-state
-				if (currentState != null && !currentState.Paused)
+				if (currentState is { Paused: false })
 				{
 					await currentState.Pause();
 					UILog.Log($"Current State : {currentState.StateName} - Paused.");
 				}
+				// Pause the current Any state when entering an any-state
+				if (currentAnyState is { Paused: false })
+				{
+					await currentAnyState.Pause();
+					UILog.Log($"Current State : {currentState.StateName} - Paused.");
+				}
+				
 				currentAnyState = GetState(transition.ToState);
 				if (currentAnyState is MonoBehaviour mbState && mbState != null)
 				{
@@ -191,8 +195,8 @@ namespace THEBADDEST
 							anyStates.Push(currentAnyState);
 						}
 						currentStateName = currentAnyState.StateName;
-						await currentAnyState.Enter();
-						UILog.Log($"Current State : {currentAnyState.StateName} - Entered.");
+						await currentAnyState.Resume();
+						UILog.Log($"Current State : {currentAnyState.StateName} - Resumed.");
 						return;
 					}
 				}
@@ -202,7 +206,7 @@ namespace THEBADDEST
 				currentAnyState = null;
 				currentStateName = currentState == null ? string.Empty : currentState.StateName;
 				// Resume the current state when all any-states are exited
-				if (currentState != null && currentState.Paused)
+				if (currentState is { Paused: true })
 				{
 					await currentState.Resume();
 					UILog.Log($"Current State : {currentState.StateName} - Resumed.");

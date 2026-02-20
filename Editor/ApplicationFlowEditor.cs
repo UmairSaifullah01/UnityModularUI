@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 using Object = System.Object;
 using System.Collections.Generic;
@@ -151,8 +151,9 @@ namespace THEBADDEST.UI
                     if (selectedStateToAddIndex >= remainingStateNames.Length)
                         selectedStateToAddIndex = 0;
                     
-                    // Dropdown integrated with button for better UX
-                    selectedStateToAddIndex = EditorGUILayout.Popup(GUIContent.none, selectedStateToAddIndex, remainingStateNames, GUILayout.ExpandWidth(true), GUILayout.Height(30));
+                    // Dropdown with explicit height to match Add button (30px)
+                    Rect popupRect = EditorGUILayout.GetControlRect(false, 30);
+                    selectedStateToAddIndex = EditorGUI.Popup(popupRect, selectedStateToAddIndex, remainingStateNames);
                     
                     // Prominent add button
                     GUI.backgroundColor = new Color(0.2f, 0.6f, 0.9f);
@@ -264,11 +265,6 @@ namespace THEBADDEST.UI
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("State Management", EditorStyles.boldLabel);
             
-             if (GUILayout.Button("Generate UIStateNames", GUILayout.Height(30)))
-            {
-                GenerateUIStateNames();
-            }
-            
             // Add State with Dropdown - Improved UI/UX
             string[] availableStateNames = GetAvailableStateNames();
             
@@ -280,8 +276,9 @@ namespace THEBADDEST.UI
                 if (selectedStateToAddIndex >= availableStateNames.Length)
                     selectedStateToAddIndex = 0;
                 
-                // Dropdown integrated with button for better UX
-                selectedStateToAddIndex = EditorGUILayout.Popup(GUIContent.none, selectedStateToAddIndex, availableStateNames, GUILayout.ExpandWidth(true), GUILayout.Height(30));
+                // Dropdown with explicit height to match Add button (30px)
+                Rect popupRect = EditorGUILayout.GetControlRect(false, 30);
+                selectedStateToAddIndex = EditorGUI.Popup(popupRect, selectedStateToAddIndex, availableStateNames);
                 
                 // Prominent add button
                 GUI.backgroundColor = new Color(0.2f, 0.6f, 0.9f);
@@ -316,6 +313,10 @@ namespace THEBADDEST.UI
                 EditorGUILayout.HelpBox("All available states have been added.", MessageType.Info);
             }
             EditorGUILayout.HelpBox($"Total States: {entriesProperty.arraySize}", MessageType.None);
+            if (GUILayout.Button("Generate UIStateNames", GUILayout.Height(30)))
+            {
+                GenerateUIStateNames();
+            }
             EditorGUILayout.EndVertical();
 
             serializedObject.ApplyModifiedProperties();
@@ -583,18 +584,31 @@ namespace THEBADDEST.UI
             
             EditorGUILayout.Space(10);
             
-            // Flags section
+            // Flags section: label + gap + toggle per flag (no text inside toggle; controlled width and gap)
+            const float flagLabelWidth = 80f;
+            const float flagGap = 0f;
+            const float flagToggleWidth = 18f;
+            const float flagGroupSpacing = 12f;
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField("Flags:", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("Flags", EditorStyles.boldLabel);
+            
             EditorGUILayout.BeginHorizontal();
-            isAnyState.boolValue = EditorGUILayout.Toggle(new GUIContent("Any", "Is Any State"), isAnyState.boolValue, GUILayout.Width(50));
-            clearAnyStates.boolValue = EditorGUILayout.Toggle(new GUIContent("Clear Any", "Clear Any States"), clearAnyStates.boolValue, GUILayout.Width(80));
-            clearAllStates.boolValue = EditorGUILayout.Toggle(new GUIContent("Clear All", "Clear All States"), clearAllStates.boolValue, GUILayout.Width(80));
+            EditorGUILayout.LabelField("Any State", GUILayout.MinWidth(flagLabelWidth));
+            EditorGUILayout.Space(flagGap);
+            isAnyState.boolValue = EditorGUILayout.Toggle(GUIContent.none, isAnyState.boolValue, GUILayout.Width(flagToggleWidth));
+            EditorGUILayout.Space(flagGroupSpacing);
+            EditorGUILayout.LabelField("Clear Any States", GUILayout.MinWidth(flagLabelWidth));
+            EditorGUILayout.Space(flagGap);
+            clearAnyStates.boolValue = EditorGUILayout.Toggle(GUIContent.none, clearAnyStates.boolValue, GUILayout.Width(flagToggleWidth));
+            EditorGUILayout.Space(flagGroupSpacing);
+            EditorGUILayout.LabelField("Clear All States", GUILayout.MinWidth(flagLabelWidth));
+            EditorGUILayout.Space(flagGap);
+            clearAllStates.boolValue = EditorGUILayout.Toggle(GUIContent.none, clearAllStates.boolValue, GUILayout.Width(flagToggleWidth));
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
             
             EditorGUILayout.EndHorizontal();
-            
+            EditorGUILayout.Space(13);
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(3);
         }
@@ -705,13 +719,25 @@ namespace THEBADDEST.UI
                 
                 EditorGUILayout.Space(10);
                 
-                // Flags section
+                // Flags section: label + gap + toggle per flag (no text inside toggle; controlled width and gap)
+                const float flagLabelWidth = 120f;
+                const float flagGap = 8f;
+                const float flagToggleWidth = 18f;
+                const float flagGroupSpacing = 12f;
                 EditorGUILayout.BeginVertical();
-                EditorGUILayout.LabelField("Flags:", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField("Flags", EditorStyles.boldLabel);
                 EditorGUILayout.BeginHorizontal();
-                isAnyState.boolValue = EditorGUILayout.Toggle(new GUIContent("Any", "Is Any State"), isAnyState.boolValue, GUILayout.Width(50));
-                clearAnyStates.boolValue = EditorGUILayout.Toggle(new GUIContent("Clear Any", "Clear Any States"), clearAnyStates.boolValue, GUILayout.Width(80));
-                clearAllStates.boolValue = EditorGUILayout.Toggle(new GUIContent("Clear All", "Clear All States"), clearAllStates.boolValue, GUILayout.Width(80));
+                EditorGUILayout.LabelField("Any State", GUILayout.Width(flagLabelWidth));
+                EditorGUILayout.Space(flagGap);
+                isAnyState.boolValue = EditorGUILayout.Toggle(GUIContent.none, isAnyState.boolValue, GUILayout.Width(flagToggleWidth));
+                EditorGUILayout.Space(flagGroupSpacing);
+                EditorGUILayout.LabelField("Clear Any States", GUILayout.Width(flagLabelWidth));
+                EditorGUILayout.Space(flagGap);
+                clearAnyStates.boolValue = EditorGUILayout.Toggle(GUIContent.none, clearAnyStates.boolValue, GUILayout.Width(flagToggleWidth));
+                EditorGUILayout.Space(flagGroupSpacing);
+                EditorGUILayout.LabelField("Clear All States", GUILayout.Width(flagLabelWidth));
+                EditorGUILayout.Space(flagGap);
+                clearAllStates.boolValue = EditorGUILayout.Toggle(GUIContent.none, clearAllStates.boolValue, GUILayout.Width(flagToggleWidth));
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndVertical();
                 

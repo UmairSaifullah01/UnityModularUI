@@ -1,4 +1,5 @@
 using THEBADDEST.DatabaseModule;
+using THEBADDEST;
 using UnityEngine;
 
 
@@ -8,9 +9,9 @@ namespace THEBADDEST.UI
 
 	public interface IUIStateFactory
 	{
-
 		IState CreateState(string id);
-
+		/// <summary>Returns a transition to the boot state defined in ApplicationFlow, or null if none.</summary>
+		ITransition GetBootState();
 	}
 
 	public class UIStateFactory : IUIStateFactory
@@ -62,6 +63,13 @@ namespace THEBADDEST.UI
 			return state;
 		}
 
+		/// <summary>Returns a transition to the boot state defined in ApplicationFlow, or null if none.</summary>
+		public ITransition GetBootState()
+		{
+			if (applicationFlow == null || string.IsNullOrEmpty(applicationFlow.BootStateName))
+				return null;
+			return new TransitionBase(applicationFlow.BootStateName);
+		}
 	}
 
 
