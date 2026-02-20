@@ -14,6 +14,17 @@ namespace THEBADDEST.UI
         {
         }
 
+#if UNITY_EDITOR
+        [System.Serializable]
+        public class NodeData
+        {
+            public string stateName;
+            public Vector2 position;
+        }
+        [HideInInspector]
+        public System.Collections.Generic.List<NodeData> nodeMetaData = new System.Collections.Generic.List<NodeData>();
+#endif
+
         // Add your custom table logic here.
     }
 
@@ -28,6 +39,8 @@ namespace THEBADDEST.UI
 
         public ITransition[] GetTransitions()
         {
+            if (transitions == null)
+                return System.Array.Empty<ITransition>();
             ITransition[] transitionsArray = new ITransition[transitions.Length];
             for (int i = 0; i < transitions.Length; i++)
             {

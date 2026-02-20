@@ -1,5 +1,3 @@
-using System;
-using THEBADDEST.DatabaseModule;
 using UnityEngine;
 
 
@@ -15,6 +13,7 @@ namespace THEBADDEST.UI
 	{
 		[SerializeField] Camera uiCamera;
 		[SerializeField] ToasterService toasterService;
+		[SerializeField] bool enableDebugLogs = true;
 		IUIStateFactory uiStateFactory;
 
 		/// <summary>
@@ -41,6 +40,16 @@ namespace THEBADDEST.UI
 			{
 				toasterService.Initialize(uiCamera);
 			}
+		}
+
+		/// <summary>
+		/// Transitions to the boot state if one is defined in ApplicationFlow.
+		/// </summary>
+		public void TransitionToBootState()
+		{
+			var bootTransition = uiStateFactory.GetBootState();
+			if (bootTransition != null)
+				Transition(bootTransition);
 		}
 		
 		

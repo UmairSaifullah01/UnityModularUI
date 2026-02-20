@@ -1,10 +1,13 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 using Object = System.Object;
 using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Reflection;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace THEBADDEST.UI
 {
@@ -132,6 +135,10 @@ namespace THEBADDEST.UI
             {
                 // show add button only when empty
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                 if (GUILayout.Button("Generate UIStateNames", GUILayout.Height(30)))
+                {
+                    GenerateUIStateNames();
+                }
                 EditorGUILayout.HelpBox("No states defined. Select a state from the dropdown and click the button to add it.", MessageType.Info);
                 
                 string[] remainingStateNames = GetAvailableStateNames();
@@ -144,8 +151,9 @@ namespace THEBADDEST.UI
                     if (selectedStateToAddIndex >= remainingStateNames.Length)
                         selectedStateToAddIndex = 0;
                     
-                    // Dropdown integrated with button for better UX
-                    selectedStateToAddIndex = EditorGUILayout.Popup(GUIContent.none, selectedStateToAddIndex, remainingStateNames, GUILayout.ExpandWidth(true), GUILayout.Height(30));
+                    // Dropdown with explicit height to match Add button (30px)
+                    Rect popupRect = EditorGUILayout.GetControlRect(false, 30);
+                    selectedStateToAddIndex = EditorGUI.Popup(popupRect, selectedStateToAddIndex, remainingStateNames);
                     
                     // Prominent add button
                     GUI.backgroundColor = new Color(0.2f, 0.6f, 0.9f);
@@ -268,8 +276,9 @@ namespace THEBADDEST.UI
                 if (selectedStateToAddIndex >= availableStateNames.Length)
                     selectedStateToAddIndex = 0;
                 
-                // Dropdown integrated with button for better UX
-                selectedStateToAddIndex = EditorGUILayout.Popup(GUIContent.none, selectedStateToAddIndex, availableStateNames, GUILayout.ExpandWidth(true), GUILayout.Height(30));
+                // Dropdown with explicit height to match Add button (30px)
+                Rect popupRect = EditorGUILayout.GetControlRect(false, 30);
+                selectedStateToAddIndex = EditorGUI.Popup(popupRect, selectedStateToAddIndex, availableStateNames);
                 
                 // Prominent add button
                 GUI.backgroundColor = new Color(0.2f, 0.6f, 0.9f);
@@ -304,6 +313,10 @@ namespace THEBADDEST.UI
                 EditorGUILayout.HelpBox("All available states have been added.", MessageType.Info);
             }
             EditorGUILayout.HelpBox($"Total States: {entriesProperty.arraySize}", MessageType.None);
+            if (GUILayout.Button("Generate UIStateNames", GUILayout.Height(30)))
+            {
+                GenerateUIStateNames();
+            }
             EditorGUILayout.EndVertical();
 
             serializedObject.ApplyModifiedProperties();
@@ -571,18 +584,31 @@ namespace THEBADDEST.UI
             
             EditorGUILayout.Space(10);
             
-            // Flags section
+            // Flags section: label + gap + toggle per flag (no text inside toggle; controlled width and gap)
+            const float flagLabelWidth = 80f;
+            const float flagGap = 0f;
+            const float flagToggleWidth = 18f;
+            const float flagGroupSpacing = 12f;
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField("Flags:", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("Flags", EditorStyles.boldLabel);
+            
             EditorGUILayout.BeginHorizontal();
-            isAnyState.boolValue = EditorGUILayout.Toggle(new GUIContent("Any", "Is Any State"), isAnyState.boolValue, GUILayout.Width(50));
-            clearAnyStates.boolValue = EditorGUILayout.Toggle(new GUIContent("Clear Any", "Clear Any States"), clearAnyStates.boolValue, GUILayout.Width(80));
-            clearAllStates.boolValue = EditorGUILayout.Toggle(new GUIContent("Clear All", "Clear All States"), clearAllStates.boolValue, GUILayout.Width(80));
+            EditorGUILayout.LabelField("Any State", GUILayout.MinWidth(flagLabelWidth));
+            EditorGUILayout.Space(flagGap);
+            isAnyState.boolValue = EditorGUILayout.Toggle(GUIContent.none, isAnyState.boolValue, GUILayout.Width(flagToggleWidth));
+            EditorGUILayout.Space(flagGroupSpacing);
+            EditorGUILayout.LabelField("Clear Any States", GUILayout.MinWidth(flagLabelWidth));
+            EditorGUILayout.Space(flagGap);
+            clearAnyStates.boolValue = EditorGUILayout.Toggle(GUIContent.none, clearAnyStates.boolValue, GUILayout.Width(flagToggleWidth));
+            EditorGUILayout.Space(flagGroupSpacing);
+            EditorGUILayout.LabelField("Clear All States", GUILayout.MinWidth(flagLabelWidth));
+            EditorGUILayout.Space(flagGap);
+            clearAllStates.boolValue = EditorGUILayout.Toggle(GUIContent.none, clearAllStates.boolValue, GUILayout.Width(flagToggleWidth));
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
             
             EditorGUILayout.EndHorizontal();
-            
+            EditorGUILayout.Space(13);
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(3);
         }
@@ -693,13 +719,25 @@ namespace THEBADDEST.UI
                 
                 EditorGUILayout.Space(10);
                 
-                // Flags section
+                // Flags section: label + gap + toggle per flag (no text inside toggle; controlled width and gap)
+                const float flagLabelWidth = 120f;
+                const float flagGap = 8f;
+                const float flagToggleWidth = 18f;
+                const float flagGroupSpacing = 12f;
                 EditorGUILayout.BeginVertical();
-                EditorGUILayout.LabelField("Flags:", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField("Flags", EditorStyles.boldLabel);
                 EditorGUILayout.BeginHorizontal();
-                isAnyState.boolValue = EditorGUILayout.Toggle(new GUIContent("Any", "Is Any State"), isAnyState.boolValue, GUILayout.Width(50));
-                clearAnyStates.boolValue = EditorGUILayout.Toggle(new GUIContent("Clear Any", "Clear Any States"), clearAnyStates.boolValue, GUILayout.Width(80));
-                clearAllStates.boolValue = EditorGUILayout.Toggle(new GUIContent("Clear All", "Clear All States"), clearAllStates.boolValue, GUILayout.Width(80));
+                EditorGUILayout.LabelField("Any State", GUILayout.Width(flagLabelWidth));
+                EditorGUILayout.Space(flagGap);
+                isAnyState.boolValue = EditorGUILayout.Toggle(GUIContent.none, isAnyState.boolValue, GUILayout.Width(flagToggleWidth));
+                EditorGUILayout.Space(flagGroupSpacing);
+                EditorGUILayout.LabelField("Clear Any States", GUILayout.Width(flagLabelWidth));
+                EditorGUILayout.Space(flagGap);
+                clearAnyStates.boolValue = EditorGUILayout.Toggle(GUIContent.none, clearAnyStates.boolValue, GUILayout.Width(flagToggleWidth));
+                EditorGUILayout.Space(flagGroupSpacing);
+                EditorGUILayout.LabelField("Clear All States", GUILayout.Width(flagLabelWidth));
+                EditorGUILayout.Space(flagGap);
+                clearAllStates.boolValue = EditorGUILayout.Toggle(GUIContent.none, clearAllStates.boolValue, GUILayout.Width(flagToggleWidth));
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndVertical();
                 
@@ -750,28 +788,6 @@ namespace THEBADDEST.UI
             CalculateGraphLayout(firstStateName);
             
             
-            // Graph controls
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Zoom:", GUILayout.Width(50));
-            graphZoom = EditorGUILayout.Slider(graphZoom, 0.5f, 2f);
-            EditorGUILayout.LabelField($"{graphZoom:F2}x", GUILayout.Width(40));
-            if (GUILayout.Button("🔄 Reset View", GUILayout.Width(100)))
-            {
-                graphZoom = 1f;
-                graphPanOffset = Vector2.zero;
-            }
-            if (GUILayout.Button("📐 Auto Layout", GUILayout.Width(100)))
-            {
-                AutoLayoutGraph();
-            }
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.HelpBox("Pan: Alt+Drag or Middle Mouse | Zoom: Scroll Wheel", MessageType.None);
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.Space(3);
-            
-            EditorGUILayout.Space(5);
-            
             // Graph area - larger for better visibility
             Rect graphArea = EditorGUILayout.GetControlRect(false, 500);
             graphArea = EditorGUI.IndentedRect(graphArea);
@@ -787,31 +803,28 @@ namespace THEBADDEST.UI
             
             // Draw connections first (before nodes) using Handles
             Handles.BeginGUI();
-            
-            // Apply zoom and pan to Handles matrix
+            // Apply pan to Handles matrix
             Matrix4x4 oldHandlesMatrix = Handles.matrix;
-            Handles.matrix = Matrix4x4.TRS(graphPanOffset, Quaternion.identity, Vector3.one * graphZoom);
+            Handles.matrix = Matrix4x4.TRS(graphPanOffset, Quaternion.identity, Vector3.one);
             
             // Draw all connections from all states
             DrawAllGraphConnectionsSimple(graphArea);
             
-            // Restore Handles matrix
             Handles.matrix = oldHandlesMatrix;
             Handles.EndGUI();
             
-            // Apply zoom and pan to GUI for nodes
+            // Apply pan to GUI for nodes
             Matrix4x4 oldGUIMatrix = GUI.matrix;
-            GUI.matrix = Matrix4x4.TRS(graphPanOffset, Quaternion.identity, Vector3.one * graphZoom) * GUI.matrix;
+            GUI.matrix = Matrix4x4.TRS(graphPanOffset, Quaternion.identity, Vector3.one) * GUI.matrix;
             
-            // Draw all nodes (no current state highlight in full graph view)
+            // Draw all nodes
             DrawGraphNodes("", graphArea);
             
-            // Restore GUI matrix
             GUI.matrix = oldGUIMatrix;
             
             GUI.EndGroup();
             
-            // Handle mouse input for panning
+            // Handle mouse input for panning/dragging
             HandleGraphInput(graphArea);
             
             EditorGUILayout.Space(5);
@@ -835,11 +848,36 @@ namespace THEBADDEST.UI
         {
             if (entriesProperty == null) return;
             
-            // Initialize positions if needed
-            if (nodePositions.Count == 0 || !nodePositions.ContainsKey(currentStateName))
+            // Try to load positions from metadata
+            var flow = target as ApplicationFlow;
+            if (flow != null && flow.nodeMetaData != null && flow.nodeMetaData.Count > 0)
             {
-                AutoLayoutGraph();
+                bool anyMissing = false;
+                foreach(var meta in flow.nodeMetaData)
+                {
+                    if (!string.IsNullOrEmpty(meta.stateName))
+                    {
+                        nodePositions[meta.stateName] = new Rect(meta.position.x, meta.position.y, 224, 74);
+                    }
+                }
+                
+                // Check if we have positions for all current states
+                for (int i = 0; i < entriesProperty.arraySize; i++)
+                {
+                    var element = entriesProperty.GetArrayElementAtIndex(i);
+                    var stateName = element.FindPropertyRelative("stateName").stringValue;
+                    if (!nodePositions.ContainsKey(stateName))
+                    {
+                        anyMissing = true; 
+                        break;
+                    }
+                }
+                
+                if (!anyMissing) return;
             }
+            
+            // Initialize positions if needed (first run or missing nodes)
+            AutoLayoutGraph();
         }
 
         private void AutoLayoutGraph()
@@ -886,6 +924,9 @@ namespace THEBADDEST.UI
                 // Skip boot state as it's already placed
                 if (stateName == bootStateName) continue;
                 
+                // If it was already placed (duplicate check), skip
+                if (nodePositions.ContainsKey(stateName)) continue;
+                
                 float x = startX + col * nodeSpacing;
                 float y = startY + row * nodeSpacing;
                 
@@ -898,6 +939,28 @@ namespace THEBADDEST.UI
                     row++;
                 }
             }
+            
+            SaveNodePositions();
+        }
+
+        private void SaveNodePositions()
+        {
+            var flow = target as ApplicationFlow;
+            if (flow == null) return;
+            
+            if (flow.nodeMetaData == null) flow.nodeMetaData = new List<ApplicationFlow.NodeData>();
+            flow.nodeMetaData.Clear();
+            
+            foreach (var kvp in nodePositions)
+            {
+                flow.nodeMetaData.Add(new ApplicationFlow.NodeData 
+                { 
+                    stateName = kvp.Key, 
+                    position = kvp.Value.position 
+                });
+            }
+            
+            EditorUtility.SetDirty(flow);
         }
 
         private void DrawGraphNodes(string currentStateName, Rect graphArea)
@@ -923,43 +986,82 @@ namespace THEBADDEST.UI
                 bool isBootState = !string.IsNullOrEmpty(bootStateName) && stateName == bootStateName;
                 bool isCurrentState = !string.IsNullOrEmpty(currentStateName) && stateName == currentStateName;
                 
-                // Use Behavior Tree Editor style node
-                GUIStyle nodeStyle = new GUIStyle 
-                { 
-                    normal = { background = EditorGUIUtility.Load("builtin skins/darkskin/images/node1.png") as Texture2D }, 
-                    border = new RectOffset(12, 12, 12, 12) 
-                };
+                // Custom Node Styling
+                // Background
+                Color nodeColor = new Color(0.2f, 0.2f, 0.2f, 0.9f);
+                EditorGUI.DrawRect(nodeRect, nodeColor);
                 
-                GUILayout.BeginArea(nodeRect, nodeStyle);
+                // Header Color based on state type
+                Color headerColor = new Color(0.3f, 0.5f, 0.7f); // Normal: Blue
+                if (isBootState) headerColor = new Color(0.2f, 0.6f, 0.3f); // Boot: Green
+                if (isCurrentState) headerColor = new Color(0.8f, 0.5f, 0.2f); // Current: Orange (Runtime)
+                
+                // Header Rect
+                Rect headerRect = new Rect(nodeRect.x, nodeRect.y, nodeRect.width, 25);
+                EditorGUI.DrawRect(headerRect, headerColor);
+                
+                // Outline/Border
+                DrawRectOutline(nodeRect, new Color(0.1f, 0.1f, 0.1f), 1f);
+                if (isCurrentState) DrawRectOutline(nodeRect, Color.yellow, 2f);
+                
+                GUILayout.BeginArea(nodeRect);
+                
+                // State Name
                 GUIStyle labelStyle = new GUIStyle(GUI.skin.label) 
                 { 
                     alignment = TextAnchor.MiddleCenter, 
-                    fontSize = 14,
+                    fontSize = 12,
+                    fontStyle = FontStyle.Bold,
                     normal = { textColor = Color.white }
                 };
                 
-                EditorGUILayout.BeginVertical();
-                
-                // State name label
+                // State name label in header
                 string displayName = isBootState ? $"★ {stateName}" : stateName;
-                EditorGUILayout.LabelField(displayName, labelStyle, GUILayout.Height(35));
+                GUI.Label(new Rect(0, 4, nodeRect.width, 20), displayName, labelStyle);
                 
-                // Transition count (no button, just display)
+                EditorGUILayout.BeginVertical();
+                GUILayout.Space(28); // Skip header
+                
+                // Transition count
                 var transitions = element.FindPropertyRelative("transitions");
                 int transitionCount = transitions != null && transitions.isArray ? transitions.arraySize : 0;
                 
                 GUIStyle countStyle = new GUIStyle(GUI.skin.label) 
                 { 
                     alignment = TextAnchor.MiddleCenter,
-                    fontSize = 11,
+                    fontSize = 10,
                     normal = { textColor = new Color(0.8f, 0.8f, 0.8f) }
                 };
-                EditorGUILayout.LabelField($"{transitionCount} Transition(s)", countStyle, GUILayout.Height(25));
+                
+                if (transitionCount > 0)
+                {
+                    GUILayout.Label($"{transitionCount} Transition(s)", countStyle);
+                    // Preview first few destinations?
+                    if (transitionListStyle == null)
+                    {
+                        transitionListStyle = new GUIStyle(GUI.skin.label);
+                        transitionListStyle.fontSize = 9;
+                        transitionListStyle.alignment = TextAnchor.MiddleCenter;
+                        transitionListStyle.normal.textColor = new Color(0.7f, 0.7f, 0.7f);
+                    }
+                    
+                    if (transitionCount > 0)
+                    {
+                         string firstTarget = transitions.GetArrayElementAtIndex(0).FindPropertyRelative("targetState").stringValue;
+                         GUILayout.Label($"→ {firstTarget}" + (transitionCount > 1 ? "..." : ""), transitionListStyle);
+                    }
+                }
+                else
+                {
+                    GUILayout.Label("No Transitions", countStyle);
+                }
                 
                 EditorGUILayout.EndVertical();
                 GUILayout.EndArea();
             }
         }
+        
+        private GUIStyle transitionListStyle;
 
         private void DrawAllGraphConnectionsSimple(Rect graphArea)
         {
@@ -1009,42 +1111,107 @@ namespace THEBADDEST.UI
                         lineColor = Color.green;
                     
                     // Draw connection using Handles
-                    DrawConnectionWithHandles(fromPoint, toPoint, lineColor);
+                    DrawConnectionWithHandles(fromPoint, toPoint, lineColor, fromRect, toRect);
                 }
             }
         }
 
-        private void DrawConnectionWithHandles(Vector2 from, Vector2 to, Color color)
+        private void DrawConnectionWithHandles(Vector2 fromCenter, Vector2 toCenter, Color color, Rect fromRect, Rect toRect)
         {
-            // Use DrawingScope for automatic color management
+            // Calculate best anchor points
+            Vector2 start = fromCenter;
+            Vector2 end = toCenter;
+            Vector2 startTangent = Vector2.right;
+            Vector2 endTangent = Vector2.left;
+            
+            // Determine relative positions
+            bool isRight = toRect.xMin > fromRect.xMax + 20;
+            bool isLeft = toRect.xMax < fromRect.xMin - 20;
+            bool isBelow = toRect.yMin > fromRect.yMax + 20;
+            bool isAbove = toRect.yMax < fromRect.yMin - 20;
+            
+            if (isRight)
+            {
+                start = new Vector2(fromRect.xMax, fromRect.center.y);
+                end = new Vector2(toRect.xMin, toRect.center.y);
+                startTangent = Vector2.right;
+                endTangent = Vector2.left;
+            }
+            else if (isLeft)
+            {
+                start = new Vector2(fromRect.xMin, fromRect.center.y);
+                end = new Vector2(toRect.xMax, toRect.center.y);
+                startTangent = Vector2.left;
+                endTangent = Vector2.right;
+            }
+            else if (isBelow)
+            {
+                start = new Vector2(fromRect.center.x, fromRect.yMax);
+                end = new Vector2(toRect.center.x, toRect.yMin);
+                startTangent = Vector2.up; // Actually down in GUI coords, but we'll scale it
+                endTangent = Vector2.down;
+            }
+            else if (isAbove)
+            {
+                start = new Vector2(fromRect.center.x, fromRect.yMin);
+                end = new Vector2(toRect.center.x, toRect.yMax);
+                startTangent = Vector2.down;
+                endTangent = Vector2.up;
+            }
+            
+            // Adjust tangents based on distance
+            float dist = Vector2.Distance(start, end);
+            float tangentStrength = Mathf.Min(dist * 0.5f, 150f);
+            
+            // If strictly vertical, modify vertical tangents
+            if (isBelow)
+            {
+                 startTangent = Vector2.up * tangentStrength; // down
+                 endTangent = Vector2.down * tangentStrength; // up
+            }
+            else if (isAbove)
+            {
+                 startTangent = Vector2.down * tangentStrength;
+                 endTangent = Vector2.up * tangentStrength;
+            }
+            else
+            {
+                startTangent *= tangentStrength;
+                endTangent *= tangentStrength;
+            }
+            
             using (new Handles.DrawingScope(color))
             {
-                // Draw bezier curve using Handles.DrawBezier (more reliable)
-                Vector3 from3D = new Vector3(from.x, from.y, 0);
-                Vector3 to3D = new Vector3(to.x, to.y, 0);
-                Vector3 control1 = new Vector3(from.x, from.y + 50, 0);
-                Vector3 control2 = new Vector3(to.x, to.y - 50, 0);
+                Vector3 start3D = new Vector3(start.x, start.y, 0);
+                Vector3 end3D = new Vector3(end.x, end.y, 0);
+                Vector3 startTan3D = new Vector3(start.x + startTangent.x, start.y + startTangent.y, 0);
+                Vector3 endTan3D = new Vector3(end.x + endTangent.x, end.y + endTangent.y, 0);
+
+                if (isBelow || isAbove)
+                {
+                    // Flip Y for vertical tangents in 3D/Handle space if needed, 
+                    // but typically Handles.DrawBezier works fine with screen coords z=0
+                    startTan3D = new Vector3(start.x, start.y + (isBelow ? 1 : -1) * tangentStrength, 0);
+                    endTan3D = new Vector3(end.x, end.y + (isBelow ? -1 : 1) * tangentStrength, 0);
+                }
+
+                Handles.DrawBezier(start3D, end3D, startTan3D, endTan3D, color, Texture2D.whiteTexture, 3f);
                 
-                // Use DrawBezier with a texture
-                Texture2D lineTex = Texture2D.whiteTexture;
-                Handles.DrawBezier(from3D, to3D, control1, control2, color, lineTex, 3f);
+                // Draw Arrow
+                Vector2 dir = (end - (Vector2)endTan3D).normalized;
+                if (dir == Vector2.zero) dir = (end - start).normalized;
                 
-                // Draw arrowhead using filled triangle
-                Vector2 direction = (to - from).normalized;
-                float arrowSize = 12f;
-                Vector2 arrowBase = to - direction * 15f;
-                Vector2 right = new Vector2(-direction.y, direction.x) * arrowSize;
+                Vector2 arrowBase = end - dir * 12f;
+                Vector2 normal = new Vector2(-dir.y, dir.x) * 8f;
                 
-                Vector3 to3DArrow = new Vector3(to.x, to.y, 0);
-                Vector3 arrowBase3D = new Vector3(arrowBase.x, arrowBase.y, 0);
-                Vector3 right3D = new Vector3(right.x, right.y, 0);
+                Vector3[] arrowPoints = new Vector3[]
+                {
+                    end3D,
+                    new Vector3(arrowBase.x + normal.x, arrowBase.y + normal.y, 0),
+                    new Vector3(arrowBase.x - normal.x, arrowBase.y - normal.y, 0)
+                };
                 
-                // Draw arrowhead as filled triangle using Handles
-                Handles.DrawAAConvexPolygon(
-                    to3DArrow,
-                    arrowBase3D + right3D,
-                    arrowBase3D - right3D
-                );
+                Handles.DrawAAConvexPolygon(arrowPoints);
             }
         }
 
@@ -1092,17 +1259,22 @@ namespace THEBADDEST.UI
             if (!graphArea.Contains(e.mousePosition))
                 return;
             
-            // Convert mouse position to graph coordinates
-            Vector2 graphMousePos = (e.mousePosition - graphArea.position - graphPanOffset) / graphZoom;
+            // Convert mouse position to graph coordinates (just apply pan offset)
+            Vector2 graphMousePos = e.mousePosition - graphArea.position - graphPanOffset;
             
             // Check if clicking/dragging a node
+            // Need to check in reverse order (top first)
             string clickedNode = null;
-            foreach (var kvp in nodePositions)
+            
+            // Use a temporary list to check hits to avoid collection modified errors or iteration issues
+            var keys = new List<string>(nodePositions.Keys);
+            
+            foreach (var key in keys)
             {
-                Rect nodeRect = kvp.Value;
+                Rect nodeRect = nodePositions[key];
                 if (nodeRect.Contains(graphMousePos))
                 {
-                    clickedNode = kvp.Key;
+                    clickedNode = key;
                     break;
                 }
             }
@@ -1122,20 +1294,26 @@ namespace THEBADDEST.UI
                         // Start panning
                         e.Use();
                     }
+                    else if (e.button == 0) 
+                    {
+                         // Click on empty space
+                         GUI.FocusControl(null);
+                    }
                     break;
                     
                 case EventType.MouseDrag:
                     if (e.button == 0 && draggedNode != null)
                     {
                         // Drag node
+                        var currentRect = nodePositions[draggedNode];
                         nodePositions[draggedNode] = new Rect(
                             graphMousePos.x - dragOffset.x,
                             graphMousePos.y - dragOffset.y,
-                            nodePositions[draggedNode].width,
-                            nodePositions[draggedNode].height
+                            currentRect.width,
+                            currentRect.height
                         );
                         e.Use();
-                        Repaint();
+                        Repaint(); 
                     }
                     else if (e.button == 2 || (e.alt && e.button == 0))
                     {
@@ -1147,17 +1325,12 @@ namespace THEBADDEST.UI
                     break;
                     
                 case EventType.MouseUp:
-                    if (e.button == 0)
+                    if (e.button == 0 && draggedNode != null)
                     {
                         draggedNode = null;
+                        SaveNodePositions(); // Save on drag end
                         e.Use();
                     }
-                    break;
-                    
-                case EventType.ScrollWheel:
-                    graphZoom = Mathf.Clamp(graphZoom - e.delta.y * 0.01f, 0.5f, 2f);
-                    e.Use();
-                    Repaint();
                     break;
             }
         }
@@ -1232,6 +1405,64 @@ namespace THEBADDEST.UI
             var monoScript = (target as MonoBehaviour) != null ? MonoScript.FromMonoBehaviour((MonoBehaviour)target) : MonoScript.FromScriptableObject((ScriptableObject)target);
             EditorGUILayout.ObjectField("Script", monoScript, target.GetType(), false);
             EditorGUI.EndDisabledGroup();
+        }
+        private void GenerateUIStateNames()
+        {
+            if (entriesProperty == null) return;
+        
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("namespace THEBADDEST.UI");
+            sb.AppendLine("{");
+            sb.AppendLine("\tpublic static class UIStateNames");
+            sb.AppendLine("\t{");
+        
+            HashSet<string> processedNames = new HashSet<string>();
+        
+            for (int i = 0; i < entriesProperty.arraySize; i++)
+            {
+                var element = entriesProperty.GetArrayElementAtIndex(i);
+                var stateNameProp = element.FindPropertyRelative("stateName");
+                string rawName = stateNameProp.stringValue;
+        
+                if (string.IsNullOrEmpty(rawName)) continue;
+        
+                // Sanitize name for variable usage (remove spaces, special chars)
+                string varName = Regex.Replace(rawName, @"[^a-zA-Z0-9_]", "");
+                
+                // Ensure starts with letter or underscore
+                if (varName.Length > 0 && char.IsDigit(varName[0])) varName = "_" + varName;
+        
+                if (!string.IsNullOrEmpty(varName) && !processedNames.Contains(varName))
+                {
+                    sb.AppendLine($"\t\tpublic const string {varName} = \"{rawName}\";");
+                    processedNames.Add(varName);
+                }
+            }
+        
+            sb.AppendLine("\t}");
+            sb.AppendLine("}");
+        
+            // Find path to save - default to Assets/UnityModularUI/Runtime/UIStateNames.cs
+            string folderPath = "Assets/UnityModularUI/Runtime";
+            string[] guids = AssetDatabase.FindAssets("UIState t:Script");
+            if (guids.Length > 0)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                folderPath = Path.GetDirectoryName(path);
+            }
+        
+            string filePath = Path.Combine(folderPath, "UIStateNames.cs");
+        
+            try 
+            {
+                File.WriteAllText(filePath, sb.ToString());
+                AssetDatabase.Refresh();
+                EditorUtility.DisplayDialog("Success", $"UIStateNames.cs generated at:\n{filePath}", "OK");
+            }
+            catch (System.Exception e)
+            {
+                EditorUtility.DisplayDialog("Error", $"Failed to generate UIStateNames.cs:\n{e.Message}", "OK");
+            }
         }
     }
 }

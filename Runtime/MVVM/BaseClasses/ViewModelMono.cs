@@ -23,7 +23,12 @@ namespace THEBADDEST.MVVM
 		}
 		
 		protected ViewModelBase ViewModel;
-		
+
+		public void Binder<T>(string id, T value)
+		{
+			ViewModel.Binder(id, value);
+		}
+
 		public virtual void InitViewModel()
 		{
 			ViewModel = new ViewModelBase(gameObject);
